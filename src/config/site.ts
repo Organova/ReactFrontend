@@ -1,62 +1,60 @@
+import {
+  BarChart3,
+  Boxes,
+  LayoutDashboard,
+  Package,
+  UserCircle,
+} from "lucide-react";
+
 export type SiteConfig = typeof siteConfig;
 
 export const siteConfig = {
-  name: "Vite + HeroUI",
-  description: "Make beautiful websites regardless of your design experience.",
+  name: "Organova",
+  description: "Organize Events with Ease",
   navItems: [
     {
       label: "Home",
       href: "/",
     },
     {
-      label: "Docs",
-      href: "/docs",
+      label: "Events",
+      href: "/events",
     },
     {
-      label: "Pricing",
-      href: "/pricing",
-    },
-    {
-      label: "Blog",
-      href: "/blog",
-    },
-    {
-      label: "About",
-      href: "/about",
+      label: "Modules",
+      href: "/modules",
     },
   ],
-  navMenuItems: [
+  sideBarItems: [
     {
-      label: "Profile",
-      href: "/profile",
+      icon: LayoutDashboard,
+      text: "Dashboard",
+      alert: true,
+      active: false,
     },
     {
-      label: "Dashboard",
-      href: "/dashboard",
+      icon: BarChart3,
+      text: "Statistics",
+      alert: false,
+      active: false,
     },
     {
-      label: "Projects",
-      href: "/projects",
+      icon: UserCircle,
+      text: "Users",
+      alert: false,
+      active: false,
     },
     {
-      label: "Team",
-      href: "/team",
+      icon: Boxes,
+      text: "Inventory",
+      alert: false,
+      active: false,
     },
     {
-      label: "Calendar",
-      href: "/calendar",
-    },
-    {
-      label: "Settings",
-      href: "/settings",
-    },
-    {
-      label: "Help & Feedback",
-      href: "/help-feedback",
-    },
-    {
-      label: "Logout",
-      href: "/logout",
+      icon: Package,
+      text: "Orders",
+      alert: false,
+      active: false,
     },
   ],
   links: {
