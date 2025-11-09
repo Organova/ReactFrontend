@@ -1,20 +1,23 @@
 import { useSidebarStore } from "@/stores/sidebarStore.ts";
 
 // @ts-ignore
-const SidebarItem = ({ icon, text, active, alert }) => {
+const SidebarItem = ({ icon, text, active, alert, onclick }) => {
   const Icon = icon;
   const { isOpen } = useSidebarStore();
 
   return (
+    // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions
     <li
+      onClick={onclick}
       className={`
       relative flex items-center py-2 px-3 my-1
       font-medium rounded-md cursor-pointer
       transition-colors group
+      text-neutral-300
       ${
         active
           ? "bg-gradient-to-tr from-indigo-200 to-indigo-800"
-          : "hover:bg-indigo-50 text-gray-600"
+          : "hover:bg-indigo-400 hover:text-neutral-300"
       }
     `}
     >
@@ -26,7 +29,7 @@ const SidebarItem = ({ icon, text, active, alert }) => {
       </span>
       {alert && (
         <div
-          className={`absolute right-2 w-2 h-2 bg-indigo-700 rounded-full ${isOpen ? "" : "top-2"}`}
+          className={`absolute right-2 w-2 h-2 bg-amber-800 rounded-full ${isOpen ? "" : "top-2"}`}
         />
       )}
 
