@@ -15,9 +15,7 @@ export default function IndexPage() {
           <span className={title()}>Organize&nbsp;</span>
           <span className={title({ color: "violet" })}>every&nbsp;</span>
           <br />
-          <span className={title()}>
-            event regardless of your experience.
-          </span>
+          <span className={title()}>event regardless of your experience.</span>
           <div className={subtitle({ class: "mt-4" })}>
             Beautiful, fast and modern Organizing tool.
           </div>

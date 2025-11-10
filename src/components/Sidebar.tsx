@@ -1,7 +1,8 @@
 import { ChevronFirst, ChevronLast, MoreVertical } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+
 import SidebarItem from "@/components/SidebarItem.tsx";
 import { useSidebarStore } from "@/stores/sidebarStore.ts";
-import { useNavigate } from "react-router-dom";
 
 const Sidebar = () => {
   const { isOpen, toggleOpen, items, toggleActive } = useSidebarStore();
@@ -13,11 +14,11 @@ const Sidebar = () => {
       active={item.active}
       alert={item.alert}
       icon={item.icon}
-      text={item.text}
       onclick={() => {
         toggleActive(item.id);
         navigate(item.path);
       }}
+      text={item.text}
     />
   ));
 
@@ -31,8 +32,8 @@ const Sidebar = () => {
             Sidebar
           </h4>
           <button
-            onClick={() => toggleOpen()}
             className="p-1.5 rounded-lg cursor-pointer"
+            onClick={() => toggleOpen()}
           >
             {isOpen ? <ChevronFirst /> : <ChevronLast />}
           </button>
@@ -42,9 +43,9 @@ const Sidebar = () => {
 
         <div className={`border-t flex p-3 `}>
           <img
-            src="https://ui-avatars.com/api/?name=John+Doe"
             alt="John Doe"
             className="w-10 h-10 rounded-md"
+            src="https://ui-avatars.com/api/?name=John+Doe"
           />
           <div
             className={`flex justify-between items-center overflow-hidden transition-all ${isOpen ? "w-52 ml-3" : "w-0"}`}

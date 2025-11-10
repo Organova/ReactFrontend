@@ -5,6 +5,7 @@ import {
   Package,
   UserCircle,
 } from "lucide-react";
+
 import { SidebarItem } from "@/types/common.ts";
 
 export type SiteConfig = typeof siteConfig;

@@ -1,4 +1,5 @@
 import { create } from "zustand";
+
 import { SidebarItem } from "@/types/common.ts";
 import { siteConfig } from "@/config/site.ts";
 
@@ -22,19 +23,16 @@ export const useSidebarStore = create<SidebarStore>((set) => ({
     set((state) => ({
       items: [...state.items, item],
     })),
-  toggleActive: (id) => set((state) => ({
-    items: state.items.map((item) =>
-      item.id === id
-        ? { ...item, active: true }
-        : { ...item, active: false }
-    ),
-  })),
+  toggleActive: (id) =>
+    set((state) => ({
+      items: state.items.map((item) =>
+        item.id === id ? { ...item, active: true } : { ...item, active: false },
+      ),
+    })),
   toggleAlert: (id) =>
     set((state) => ({
       items: state.items.map((item) =>
-        item.id === id
-          ? { ...item, alert: !item.alert }
-          : item
+        item.id === id ? { ...item, alert: !item.alert } : item,
       ),
     })),
   toggleOpen: () => set((state) => ({ isOpen: !state.isOpen })),
