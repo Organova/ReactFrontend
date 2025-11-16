@@ -1,65 +1,70 @@
-import React from 'react';
+import React from "react";
+import { Card, CardBody, Input, Select, SelectItem } from "@heroui/react";
+import { Search } from "lucide-react";
 
 interface GuestListFiltersProps {
-    searchTerm: string;
-    roleFilter: string;
-    statusFilter: string;
-    onSearch: (term: string) => void;
-    onRoleFilter: (role: string) => void;
-    onStatusFilter: (status: string) => void;
+  searchTerm: string;
+  roleFilter: string;
+  statusFilter: string;
+  onSearch: (term: string) => void;
+  onRoleFilter: (role: string) => void;
+  onStatusFilter: (status: string) => void;
 }
 
 const GuestListFilters: React.FC<GuestListFiltersProps> = ({
-                                                               searchTerm,
-                                                               roleFilter,
-                                                               statusFilter,
-                                                               onSearch,
-                                                               onRoleFilter,
-                                                               onStatusFilter
-                                                           }) => {
-    const roles = ['Alle Rollen', 'Gast', 'VIP', 'Sponsor', 'Arbeiter'];
-    const statuses = ['Alle Status', 'Zugesagt', 'Abgesagt', 'Ausstehend'];
+  searchTerm,
+  roleFilter,
+  statusFilter,
+  onSearch,
+  onRoleFilter,
+  onStatusFilter,
+}) => {
+  const roles = ["Alle Rollen", "Gast", "VIP", "Sponsor", "Arbeiter"];
+  const statuses = ["Alle Status", "Zugesagt", "Abgesagt", "Ausstehend"];
 
-    return (
-        <div className="guest-list-filters">
-            <div className="search-box">
-                <span className="search-icon">🔍</span>
-                <input
-                    type="text"
-                    placeholder="Nach Namen oder E-Mail suchen..."
-                    value={searchTerm}
-                    onChange={(e) => onSearch(e.target.value)}
-                    className="search-input"
-                />
-            </div>
+  return (
+    <Card className="mb-6">
+      <CardBody>
+        <div className="flex flex-col md:flex-row gap-4">
+          <Input
+            isClearable
+            className="flex-1"
+            placeholder="Nach Namen oder E-Mail suchen..."
+            startContent={<Search className="text-default-400" size={18} />}
+            value={searchTerm}
+            onClear={() => onSearch("")}
+            onValueChange={onSearch}
+          />
 
-            <div className="filter-group">
-                <select
-                    value={roleFilter}
-                    onChange={(e) => onRoleFilter(e.target.value)}
-                    className="filter-select"
-                >
-                    {roles.map((role) => (
-                        <option key={role} value={role}>
-                            {role}
-                        </option>
-                    ))}
-                </select>
+          <Select
+            className="w-full md:w-48"
+            placeholder="Rolle wählen"
+            selectedKeys={[roleFilter]}
+            onChange={(e) => onRoleFilter(e.target.value)}
+          >
+            {roles.map((role) => (
+              <SelectItem key={role} value={role}>
+                {role}
+              </SelectItem>
+            ))}
+          </Select>
 
-                <select
-                    value={statusFilter}
-                    onChange={(e) => onStatusFilter(e.target.value)}
-                    className="filter-select"
-                >
-                    {statuses.map((status) => (
-                        <option key={status} value={status}>
-                            {status}
-                        </option>
-                    ))}
-                </select>
-            </div>
+          <Select
+            className="w-full md:w-48"
+            placeholder="Status wählen"
+            selectedKeys={[statusFilter]}
+            onChange={(e) => onStatusFilter(e.target.value)}
+          >
+            {statuses.map((status) => (
+              <SelectItem key={status} value={status}>
+                {status}
+              </SelectItem>
+            ))}
+          </Select>
         </div>
-    );
+      </CardBody>
+    </Card>
+  );
 };
 
 export default GuestListFilters;

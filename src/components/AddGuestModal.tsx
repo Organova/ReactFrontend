@@ -1,146 +1,198 @@
-import React, { useState } from 'react';
-import { Guest } from '@/types/guest';
+import React, { useState } from "react";
+import {
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  Button,
+  Input,
+  Select,
+  SelectItem,
+} from "@heroui/react";
+
+import { Guest } from "@/types/guest";
 
 interface AddGuestModalProps {
-    onClose: () => void;
-    onAddGuest: (guest: Omit<Guest, 'id'>) => void;
+  isOpen: boolean;
+  onClose: () => void;
+  onAddGuest: (guest: Omit<Guest, "id">) => void;
 }
 
-const AddGuestModal: React.FC<AddGuestModalProps> = ({ onClose, onAddGuest }) => {
-    const [formData, setFormData] = useState({
-        vorname: '',
-        nachname: '',
-        email: '',
-        rolle: 'Gast' as Guest['rolle'],
-        status: 'Ausstehend' as Guest['status']
+const AddGuestModal: React.FC<AddGuestModalProps> = ({
+  isOpen,
+  onClose,
+  onAddGuest,
+}) => {
+  const [formData, setFormData] = useState({
+    vorname: "",
+    nachname: "",
+    email: "",
+    rolle: "Gast" as Guest["rolle"],
+    status: "Ausstehend" as Guest["status"],
+  });
+
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
+
+  const validate = () => {
+    const newErrors: { [key: string]: string } = {};
+
+    if (!formData.vorname.trim()) {
+      newErrors.vorname = "Vorname ist erforderlich";
+    }
+
+    if (!formData.nachname.trim()) {
+      newErrors.nachname = "Nachname ist erforderlich";
+    }
+
+    if (!formData.email.trim()) {
+      newErrors.email = "E-Mail ist erforderlich";
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      newErrors.email = "Ungültige E-Mail-Adresse";
+    }
+
+    setErrors(newErrors);
+
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = () => {
+    if (validate()) {
+      onAddGuest(formData);
+      setFormData({
+        vorname: "",
+        nachname: "",
+        email: "",
+        rolle: "Gast",
+        status: "Ausstehend",
+      });
+      setErrors({});
+    }
+  };
+
+  const handleClose = () => {
+    setFormData({
+      vorname: "",
+      nachname: "",
+      email: "",
+      rolle: "Gast",
+      status: "Ausstehend",
     });
+    setErrors({});
+    onClose();
+  };
 
-    const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  return (
+    <Modal isOpen={isOpen} placement="center" size="2xl" onClose={handleClose}>
+      <ModalContent>
+        {(onClose) => (
+          <>
+            <ModalHeader className="flex flex-col gap-1">
+              Neuen Gast hinzufügen
+            </ModalHeader>
+            <ModalBody>
+              <div className="flex flex-col gap-4">
+                <Input
+                  isRequired
+                  errorMessage={errors.vorname}
+                  isInvalid={!!errors.vorname}
+                  label="Vorname"
+                  placeholder="Vorname eingeben"
+                  value={formData.vorname}
+                  onValueChange={(value) => {
+                    setFormData({ ...formData, vorname: value });
+                    if (errors.vorname) setErrors({ ...errors, vorname: "" });
+                  }}
+                />
 
-    const validate = () => {
-        const newErrors: { [key: string]: string } = {};
+                <Input
+                  isRequired
+                  errorMessage={errors.nachname}
+                  isInvalid={!!errors.nachname}
+                  label="Nachname"
+                  placeholder="Nachname eingeben"
+                  value={formData.nachname}
+                  onValueChange={(value) => {
+                    setFormData({ ...formData, nachname: value });
+                    if (errors.nachname) setErrors({ ...errors, nachname: "" });
+                  }}
+                />
 
-        if (!formData.vorname.trim()) {
-            newErrors.vorname = 'Vorname ist erforderlich';
-        }
+                <Input
+                  isRequired
+                  errorMessage={errors.email}
+                  isInvalid={!!errors.email}
+                  label="E-Mail"
+                  placeholder="email@beispiel.com"
+                  type="email"
+                  value={formData.email}
+                  onValueChange={(value) => {
+                    setFormData({ ...formData, email: value });
+                    if (errors.email) setErrors({ ...errors, email: "" });
+                  }}
+                />
 
-        if (!formData.nachname.trim()) {
-            newErrors.nachname = 'Nachname ist erforderlich';
-        }
+                <Select
+                  label="Rolle"
+                  placeholder="Rolle wählen"
+                  selectedKeys={[formData.rolle]}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      rolle: e.target.value as Guest["rolle"],
+                    })
+                  }
+                >
+                  <SelectItem key="Gast" value="Gast">
+                    Gast
+                  </SelectItem>
+                  <SelectItem key="VIP" value="VIP">
+                    VIP
+                  </SelectItem>
+                  <SelectItem key="Sponsor" value="Sponsor">
+                    Sponsor
+                  </SelectItem>
+                  <SelectItem key="Arbeiter" value="Arbeiter">
+                    Arbeiter
+                  </SelectItem>
+                </Select>
 
-        if (!formData.email.trim()) {
-            newErrors.email = 'E-Mail ist erforderlich';
-        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-            newErrors.email = 'Ungültige E-Mail-Adresse';
-        }
-
-        setErrors(newErrors);
-        return Object.keys(newErrors).length === 0;
-    };
-
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-
-        if (validate()) {
-            onAddGuest(formData);
-        }
-    };
-
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-        setFormData({
-            ...formData,
-            [e.target.name]: e.target.value
-        });
-        if (errors[e.target.name]) {
-            setErrors({
-                ...errors,
-                [e.target.name]: ''
-            });
-        }
-    };
-
-    return (
-        <div className="modal-overlay" onClick={onClose}>
-            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-                <div className="modal-header">
-                    <h2>Neuen Gast hinzufügen</h2>
-                    <button className="modal-close" onClick={onClose}>
-                        ✕
-                    </button>
-                </div>
-
-                <form onSubmit={handleSubmit} className="guest-form">
-                    <div className="form-group">
-                        <label htmlFor="vorname">Vorname *</label>
-                        <input
-                            type="text"
-                            id="vorname"
-                            name="vorname"
-                            value={formData.vorname}
-                            onChange={handleChange}
-                            className={errors.vorname ? 'input-error' : ''}
-                        />
-                        {errors.vorname && <span className="error-message">{errors.vorname}</span>}
-                    </div>
-
-                    <div className="form-group">
-                        <label htmlFor="nachname">Nachname *</label>
-                        <input
-                            type="text"
-                            id="nachname"
-                            name="nachname"
-                            value={formData.nachname}
-                            onChange={handleChange}
-                            className={errors.nachname ? 'input-error' : ''}
-                        />
-                        {errors.nachname && <span className="error-message">{errors.nachname}</span>}
-                    </div>
-
-                    <div className="form-group">
-                        <label htmlFor="email">E-Mail *</label>
-                        <input
-                            type="email"
-                            id="email"
-                            name="email"
-                            value={formData.email}
-                            onChange={handleChange}
-                            className={errors.email ? 'input-error' : ''}
-                        />
-                        {errors.email && <span className="error-message">{errors.email}</span>}
-                    </div>
-
-                    <div className="form-group">
-                        <label htmlFor="rolle">Rolle</label>
-                        <select id="rolle" name="rolle" value={formData.rolle} onChange={handleChange}>
-                            <option value="Gast">Gast</option>
-                            <option value="VIP">VIP</option>
-                            <option value="Sponsor">Sponsor</option>
-                            <option value="Presenter">Presenter</option>
-                            <option value="Arbeiter">Arbeiter</option>
-                        </select>
-                    </div>
-
-                    <div className="form-group">
-                        <label htmlFor="status">Status</label>
-                        <select id="status" name="status" value={formData.status} onChange={handleChange}>
-                            <option value="Ausstehend">Ausstehend</option>
-                            <option value="Zugesagt">Zugesagt</option>
-                            <option value="Abgesagt">Abgesagt</option>
-                        </select>
-                    </div>
-
-                    <div className="modal-actions">
-                        <button type="button" className="btn-secondary" onClick={onClose}>
-                            Abbrechen
-                        </button>
-                        <button type="submit" className="btn-primary">
-                            Gast hinzufügen
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    );
+                <Select
+                  label="Status"
+                  placeholder="Status wählen"
+                  selectedKeys={[formData.status]}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      status: e.target.value as Guest["status"],
+                    })
+                  }
+                >
+                  <SelectItem key="Ausstehend" value="Ausstehend">
+                    Ausstehend
+                  </SelectItem>
+                  <SelectItem key="Zugesagt" value="Zugesagt">
+                    Zugesagt
+                  </SelectItem>
+                  <SelectItem key="Abgesagt" value="Abgesagt">
+                    Abgesagt
+                  </SelectItem>
+                </Select>
+              </div>
+            </ModalBody>
+            <ModalFooter>
+              <Button variant="light" onPress={handleClose}>
+                Abbrechen
+              </Button>
+              <Button color="primary" onPress={handleSubmit}>
+                Gast hinzufügen
+              </Button>
+            </ModalFooter>
+          </>
+        )}
+      </ModalContent>
+    </Modal>
+  );
 };
 
 export default AddGuestModal;
