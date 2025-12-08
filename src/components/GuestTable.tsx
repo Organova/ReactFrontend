@@ -12,16 +12,21 @@ import {
   Button,
   Tooltip,
 } from "@heroui/react";
-import { Trash2, Users } from "lucide-react";
+import { Trash2, Users, Edit } from "lucide-react";
 
 import { Guest } from "@/types/guest";
 
 interface GuestTableProps {
   guests: Guest[];
   onRemoveGuest: (id: string) => void;
+  onEditGuest: (id: string) => void;
 }
 
-const GuestTable: React.FC<GuestTableProps> = ({ guests, onRemoveGuest }) => {
+const GuestTable: React.FC<GuestTableProps> = ({
+  guests,
+  onRemoveGuest,
+  onEditGuest,
+}) => {
   const getRoleColor = (rolle: string) => {
     const colorMap: {
       [key: string]: "success" | "warning" | "secondary" | "primary" | "danger";
@@ -34,6 +39,7 @@ const GuestTable: React.FC<GuestTableProps> = ({ guests, onRemoveGuest }) => {
 
     return colorMap[rolle] || "default";
   };
+
   const getStatusColor = (status: string) => {
     const colorMap: { [key: string]: "success" | "danger" | "warning" } = {
       Zugesagt: "success",
@@ -105,7 +111,18 @@ const GuestTable: React.FC<GuestTableProps> = ({ guests, onRemoveGuest }) => {
                   </Chip>
                 </TableCell>
                 <TableCell>
-                  <div className="flex justify-center">
+                  <div className="flex justify-center gap-2">
+                    <Tooltip color="primary" content="Gast bearbeiten">
+                      <Button
+                        isIconOnly
+                        color="primary"
+                        size="sm"
+                        variant="light"
+                        onPress={() => onEditGuest(guest.id)}
+                      >
+                        <Edit size={18} />
+                      </Button>
+                    </Tooltip>
                     <Tooltip color="danger" content="Gast entfernen">
                       <Button
                         isIconOnly

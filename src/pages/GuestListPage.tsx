@@ -4,6 +4,7 @@ import GuestListHeader from "@/components/GuestListHeader";
 import GuestListFilters from "@/components/GuestListFilters";
 import GuestTable from "@/components/GuestTable";
 import AddGuestModal from "@/components/AddGuestModal";
+import EditGuestModal from "@/components/EditGuestModal";
 import { Guest } from "@/types/guest";
 
 const GuestListPage: React.FC = () => {
@@ -169,9 +170,10 @@ const GuestListPage: React.FC = () => {
       status: "Zugesagt",
     },
   ]);
-
   const [filteredGuests, setFilteredGuests] = useState<Guest[]>(guests);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [selectedGuest, setSelectedGuest] = useState<Guest | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [roleFilter, setRoleFilter] = useState("Alle Rollen");
   const [statusFilter, setStatusFilter] = useState("Alle Status");
@@ -228,7 +230,27 @@ const GuestListPage: React.FC = () => {
 
     setGuests(updatedGuests);
     applyFilters(searchTerm, roleFilter, statusFilter, updatedGuests);
-    setIsModalOpen(false);
+    setIsAddModalOpen(false);
+  };
+
+  const handleEditGuest = (id: string) => {
+    const guest = guests.find((g) => g.id === id);
+
+    if (guest) {
+      setSelectedGuest(guest);
+      setIsEditModalOpen(true);
+    }
+  };
+
+  const handleUpdateGuest = (updatedGuest: Guest) => {
+    const updatedGuests = guests.map((guest) =>
+      guest.id === updatedGuest.id ? updatedGuest : guest,
+    );
+
+    setGuests(updatedGuests);
+    applyFilters(searchTerm, roleFilter, statusFilter, updatedGuests);
+    setIsEditModalOpen(false);
+    setSelectedGuest(null);
   };
 
   const handleRemoveGuest = (id: string) => {
@@ -272,7 +294,7 @@ const GuestListPage: React.FC = () => {
         confirmationRate={zugesagtPercentage}
         confirmedGuests={zugesagtCount}
         totalGuests={guests.length}
-        onAddGuest={() => setIsModalOpen(true)}
+        onAddGuest={() => setIsAddModalOpen(true)}
         onExport={handleExport}
       />
 
@@ -285,13 +307,29 @@ const GuestListPage: React.FC = () => {
         onStatusFilter={handleStatusFilter}
       />
 
-      <GuestTable guests={filteredGuests} onRemoveGuest={handleRemoveGuest} />
+      <GuestTable
+        guests={filteredGuests}
+        onEditGuest={handleEditGuest}
+        onRemoveGuest={handleRemoveGuest}
+      />
 
       <AddGuestModal
-        isOpen={isModalOpen}
+        isOpen={isAddModalOpen}
         onAddGuest={handleAddGuest}
-        onClose={() => setIsModalOpen(false)}
+        onClose={() => setIsAddModalOpen(false)}
       />
+
+      {selectedGuest && (
+        <EditGuestModal
+          guest={selectedGuest}
+          isOpen={isEditModalOpen}
+          onClose={() => {
+            setIsEditModalOpen(false);
+            setSelectedGuest(null);
+          }}
+          onUpdateGuest={handleUpdateGuest}
+        />
+      )}
     </div>
   );
 };
