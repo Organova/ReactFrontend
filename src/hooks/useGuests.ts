@@ -1,51 +1,55 @@
-import { useState, useEffect } from 'react';
-import { Guest } from '@/types/guest';
-import { GuestService } from '@/services/guestService';
+import { useState, useEffect } from "react";
+
+import { Guest } from "@/types/guest";
+import { GuestService } from "@/services/guestService";
 
 export const useGuests = () => {
-    const [guests, setGuests] = useState<Guest[]>([]);
-    const [loading, setLoading] = useState(true);
+  const [guests, setGuests] = useState<Guest[]>([]);
+  const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        loadGuests();
-    }, []);
+  useEffect(() => {
+    loadGuests();
+  }, []);
 
-    const loadGuests = () => {
-        setLoading(true);
-        const loadedGuests = GuestService.getAllGuests();
-        setGuests(loadedGuests);
-        setLoading(false);
+  const loadGuests = () => {
+    setLoading(true);
+    const loadedGuests = GuestService.getAllGuests();
+
+    setGuests(loadedGuests);
+    setLoading(false);
+  };
+
+  const addGuest = (guestData: Omit<Guest, "id">) => {
+    const newGuest: Guest = {
+      ...guestData,
+      id: Date.now().toString(),
     };
 
-    const addGuest = (guestData: Omit<Guest, 'id'>) => {
-        const newGuest: Guest = {
-            ...guestData,
-            id: Date.now().toString()
-        };
-        GuestService.addGuest(newGuest);
-        loadGuests();
-        return newGuest;
-    };
+    GuestService.addGuest(newGuest);
+    loadGuests();
 
-    const updateGuest = (id: string, updates: Partial<Guest>) => {
-        GuestService.updateGuest(id, updates);
-        loadGuests();
-    };
+    return newGuest;
+  };
 
-    const removeGuest = (id: string) => {
-        GuestService.deleteGuest(id);
-        loadGuests();
-    };
+  const updateGuest = (id: string, updates: Partial<Guest>) => {
+    GuestService.updateGuest(id, updates);
+    loadGuests();
+  };
 
-    const statistics = GuestService.getStatistics();
+  const removeGuest = (id: string) => {
+    GuestService.deleteGuest(id);
+    loadGuests();
+  };
 
-    return {
-        guests,
-        loading,
-        addGuest,
-        updateGuest,
-        removeGuest,
-        statistics,
-        refreshGuests: loadGuests
-    };
+  const statistics = GuestService.getStatistics();
+
+  return {
+    guests,
+    loading,
+    addGuest,
+    updateGuest,
+    removeGuest,
+    statistics,
+    refreshGuests: loadGuests,
+  };
 };

@@ -1,54 +1,59 @@
-import { Guest } from '@/types/guest';
+import { Guest } from "@/types/guest";
 
 export class GuestService {
-    private static STORAGE_KEY = 'organova_guests';
+  private static STORAGE_KEY = "organova_guests";
 
-    static getAllGuests(): Guest[] {
-        const stored = localStorage.getItem(this.STORAGE_KEY);
-        return stored ? JSON.parse(stored) : [];
-    }
+  static getAllGuests(): Guest[] {
+    const stored = localStorage.getItem(this.STORAGE_KEY);
 
-    static addGuest(guest: Guest): Guest {
-        const guests = this.getAllGuests();
-        guests.push(guest);
-        localStorage.setItem(this.STORAGE_KEY, JSON.stringify(guests));
-        return guest;
-    }
+    return stored ? JSON.parse(stored) : [];
+  }
 
-    static updateGuest(id: string, updates: Partial<Guest>): Guest | null {
-        const guests = this.getAllGuests();
-        const index = guests.findIndex((g) => g.id === id);
+  static addGuest(guest: Guest): Guest {
+    const guests = this.getAllGuests();
 
-        if (index === -1) return null;
+    guests.push(guest);
+    localStorage.setItem(this.STORAGE_KEY, JSON.stringify(guests));
 
-        guests[index] = { ...guests[index], ...updates };
-        localStorage.setItem(this.STORAGE_KEY, JSON.stringify(guests));
-        return guests[index];
-    }
+    return guest;
+  }
 
-    static deleteGuest(id: string): boolean {
-        const guests = this.getAllGuests();
-        const filtered = guests.filter((g) => g.id !== id);
+  static updateGuest(id: string, updates: Partial<Guest>): Guest | null {
+    const guests = this.getAllGuests();
+    const index = guests.findIndex((g) => g.id === id);
 
-        if (filtered.length === guests.length) return false;
+    if (index === -1) return null;
 
-        localStorage.setItem(this.STORAGE_KEY, JSON.stringify(filtered));
-        return true;
-    }
+    guests[index] = { ...guests[index], ...updates };
+    localStorage.setItem(this.STORAGE_KEY, JSON.stringify(guests));
 
-    static getStatistics() {
-        const guests = this.getAllGuests();
-        const total = guests.length;
-        const confirmed = guests.filter((g) => g.status === 'Zugesagt').length;
-        const declined = guests.filter((g) => g.status === 'Abgesagt').length;
-        const pending = guests.filter((g) => g.status === 'Ausstehend').length;
+    return guests[index];
+  }
 
-        return {
-            total,
-            confirmed,
-            declined,
-            pending,
-            confirmationRate: total > 0 ? Math.round((confirmed / total) * 100) : 0
-        };
-    }
+  static deleteGuest(id: string): boolean {
+    const guests = this.getAllGuests();
+    const filtered = guests.filter((g) => g.id !== id);
+
+    if (filtered.length === guests.length) return false;
+
+    localStorage.setItem(this.STORAGE_KEY, JSON.stringify(filtered));
+
+    return true;
+  }
+
+  static getStatistics() {
+    const guests = this.getAllGuests();
+    const total = guests.length;
+    const confirmed = guests.filter((g) => g.status === "Zugesagt").length;
+    const declined = guests.filter((g) => g.status === "Abgesagt").length;
+    const pending = guests.filter((g) => g.status === "Ausstehend").length;
+
+    return {
+      total,
+      confirmed,
+      declined,
+      pending,
+      confirmationRate: total > 0 ? Math.round((confirmed / total) * 100) : 0,
+    };
+  }
 }
