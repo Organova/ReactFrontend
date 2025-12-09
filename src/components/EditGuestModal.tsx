@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Modal,
   ModalContent,
@@ -11,30 +11,29 @@ import {
   SelectItem,
   Divider,
 } from "@heroui/react";
-import { UserPlus, Mail, User, Briefcase, CheckCircle } from "lucide-react";
+import { Edit, Mail, User, Briefcase, CheckCircle, Save } from "lucide-react";
 
 import { Guest } from "@/types/guest";
 
-interface AddGuestModalProps {
+interface EditGuestModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onAddGuest: (guest: Omit<Guest, "id">) => void;
+  onUpdateGuest: (guest: Guest) => void;
+  guest: Guest;
 }
 
-const AddGuestModal: React.FC<AddGuestModalProps> = ({
+const EditGuestModal: React.FC<EditGuestModalProps> = ({
   isOpen,
   onClose,
-  onAddGuest,
+  onUpdateGuest,
+  guest,
 }) => {
-  const [formData, setFormData] = useState({
-    vorname: "",
-    nachname: "",
-    email: "",
-    rolle: "Gast" as Guest["rolle"],
-    status: "Ausstehend" as Guest["status"],
-  });
-
+  const [formData, setFormData] = useState<Guest>(guest);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
+
+  useEffect(() => {
+    setFormData(guest);
+  }, [guest]);
 
   const validate = () => {
     const newErrors: { [key: string]: string } = {};
@@ -60,26 +59,12 @@ const AddGuestModal: React.FC<AddGuestModalProps> = ({
 
   const handleSubmit = () => {
     if (validate()) {
-      onAddGuest(formData);
-      setFormData({
-        vorname: "",
-        nachname: "",
-        email: "",
-        rolle: "Gast",
-        status: "Ausstehend",
-      });
-      setErrors({});
+      onUpdateGuest(formData);
     }
   };
 
   const handleClose = () => {
-    setFormData({
-      vorname: "",
-      nachname: "",
-      email: "",
-      rolle: "Gast",
-      status: "Ausstehend",
-    });
+    setFormData(guest);
     setErrors({});
     onClose();
   };
@@ -102,12 +87,12 @@ const AddGuestModal: React.FC<AddGuestModalProps> = ({
             <ModalHeader className="flex flex-col gap-1 pb-2">
               <div className="flex items-center gap-2">
                 <div className="p-2 bg-primary-100 rounded-lg">
-                  <UserPlus className="text-primary" size={24} />
+                  <Edit className="text-primary" size={24} />
                 </div>
                 <div>
-                  <h2 className="text-xl font-bold">Neuen Gast hinzufügen</h2>
+                  <h2 className="text-xl font-bold">Gast bearbeiten</h2>
                   <p className="text-sm text-default-500 font-normal">
-                    Füllen Sie die Informationen des neuen Gastes aus
+                    Aktualisieren Sie die Informationen des Gastes
                   </p>
                 </div>
               </div>
@@ -252,10 +237,10 @@ const AddGuestModal: React.FC<AddGuestModalProps> = ({
               <Button
                 color="primary"
                 size="lg"
-                startContent={<UserPlus size={18} />}
+                startContent={<Save size={18} />}
                 onPress={handleSubmit}
               >
-                Gast hinzufügen
+                Änderungen speichern
               </Button>
             </ModalFooter>
           </>
@@ -265,4 +250,4 @@ const AddGuestModal: React.FC<AddGuestModalProps> = ({
   );
 };
 
-export default AddGuestModal;
+export default EditGuestModal;
