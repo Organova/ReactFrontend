@@ -1,28 +1,13 @@
 import React, { useState } from "react";
-import {
-  Modal,
-  ModalContent,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-  Button,
-  Input,
-  Select,
-  SelectItem,
-  Divider,
-} from "@heroui/react";
-import { UserPlus, Mail, User, Briefcase, CheckCircle } from "lucide-react";
 
 import { Guest } from "@/types/guest";
 
 interface AddGuestModalProps {
-  isOpen: boolean;
   onClose: () => void;
   onAddGuest: (guest: Omit<Guest, "id">) => void;
 }
 
 const AddGuestModal: React.FC<AddGuestModalProps> = ({
-  isOpen,
   onClose,
   onAddGuest,
 }) => {
@@ -58,210 +43,126 @@ const AddGuestModal: React.FC<AddGuestModalProps> = ({
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+
     if (validate()) {
       onAddGuest(formData);
-      setFormData({
-        vorname: "",
-        nachname: "",
-        email: "",
-        rolle: "Gast",
-        status: "Ausstehend",
-      });
-      setErrors({});
     }
   };
 
-  const handleClose = () => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
+  ) => {
     setFormData({
-      vorname: "",
-      nachname: "",
-      email: "",
-      rolle: "Gast",
-      status: "Ausstehend",
+      ...formData,
+      [e.target.name]: e.target.value,
     });
-    setErrors({});
-    onClose();
+    if (errors[e.target.name]) {
+      setErrors({
+        ...errors,
+        [e.target.name]: "",
+      });
+    }
   };
 
   return (
-    <Modal
-      backdrop="blur"
-      classNames={{
-        backdrop:
-          "bg-gradient-to-t from-zinc-900 to-zinc-900/10 backdrop-opacity-20",
-      }}
-      isOpen={isOpen}
-      placement="center"
-      size="2xl"
-      onClose={handleClose}
-    >
-      <ModalContent className="bg-background dark:bg-content1">
-        {(onClose) => (
-          <>
-            <ModalHeader className="flex flex-col gap-1 pb-2">
-              <div className="flex items-center gap-2">
-                <div className="p-2 bg-primary-100 rounded-lg">
-                  <UserPlus className="text-primary" size={24} />
-                </div>
-                <div>
-                  <h2 className="text-xl font-bold">Neuen Gast hinzufügen</h2>
-                  <p className="text-sm text-default-500 font-normal">
-                    Füllen Sie die Informationen des neuen Gastes aus
-                  </p>
-                </div>
-              </div>
-            </ModalHeader>
-            <Divider />
-            <ModalBody className="py-6">
-              <div className="flex flex-col gap-5">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <Input
-                    isRequired
-                    classNames={{
-                      input: "text-base",
-                      inputWrapper: "h-12",
-                    }}
-                    errorMessage={errors.vorname}
-                    isInvalid={!!errors.vorname}
-                    label="Vorname"
-                    placeholder="Max"
-                    startContent={
-                      <User className="text-default-400" size={18} />
-                    }
-                    value={formData.vorname}
-                    variant="bordered"
-                    onValueChange={(value) => {
-                      setFormData({ ...formData, vorname: value });
-                      if (errors.vorname) setErrors({ ...errors, vorname: "" });
-                    }}
-                  />
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+        <div className="modal-header">
+          <h2>Neuen Gast hinzufügen</h2>
+          <button className="modal-close" onClick={onClose}>
+            ✕
+          </button>
+        </div>
 
-                  <Input
-                    isRequired
-                    classNames={{
-                      input: "text-base",
-                      inputWrapper: "h-12",
-                    }}
-                    errorMessage={errors.nachname}
-                    isInvalid={!!errors.nachname}
-                    label="Nachname"
-                    placeholder="Mustermann"
-                    startContent={
-                      <User className="text-default-400" size={18} />
-                    }
-                    value={formData.nachname}
-                    variant="bordered"
-                    onValueChange={(value) => {
-                      setFormData({ ...formData, nachname: value });
-                      if (errors.nachname)
-                        setErrors({ ...errors, nachname: "" });
-                    }}
-                  />
-                </div>
+        <form className="guest-form" onSubmit={handleSubmit}>
+          <div className="form-group">
+            <label htmlFor="vorname">Vorname *</label>
+            <input
+              className={errors.vorname ? "input-error" : ""}
+              id="vorname"
+              name="vorname"
+              type="text"
+              value={formData.vorname}
+              onChange={handleChange}
+            />
+            {errors.vorname && (
+              <span className="error-message">{errors.vorname}</span>
+            )}
+          </div>
 
-                <Input
-                  isRequired
-                  classNames={{
-                    input: "text-base",
-                    inputWrapper: "h-12",
-                  }}
-                  errorMessage={errors.email}
-                  isInvalid={!!errors.email}
-                  label="E-Mail-Adresse"
-                  placeholder="max.mustermann@beispiel.com"
-                  startContent={<Mail className="text-default-400" size={18} />}
-                  type="email"
-                  value={formData.email}
-                  variant="bordered"
-                  onValueChange={(value) => {
-                    setFormData({ ...formData, email: value });
-                    if (errors.email) setErrors({ ...errors, email: "" });
-                  }}
-                />
+          <div className="form-group">
+            <label htmlFor="nachname">Nachname *</label>
+            <input
+              className={errors.nachname ? "input-error" : ""}
+              id="nachname"
+              name="nachname"
+              type="text"
+              value={formData.nachname}
+              onChange={handleChange}
+            />
+            {errors.nachname && (
+              <span className="error-message">{errors.nachname}</span>
+            )}
+          </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <Select
-                    classNames={{
-                      trigger: "h-12",
-                    }}
-                    label="Rolle"
-                    placeholder="Rolle auswählen"
-                    selectedKeys={[formData.rolle]}
-                    startContent={
-                      <Briefcase className="text-default-400" size={18} />
-                    }
-                    variant="bordered"
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        rolle: e.target.value as Guest["rolle"],
-                      })
-                    }
-                  >
-                    <SelectItem key="Gast" value="Gast">
-                      Gast
-                    </SelectItem>
-                    <SelectItem key="VIP" value="VIP">
-                      VIP
-                    </SelectItem>
-                    <SelectItem key="Sponsor" value="Sponsor">
-                      Sponsor
-                    </SelectItem>
-                    <SelectItem key="Arbeiter" value="Arbeiter">
-                      Arbeiter
-                    </SelectItem>
-                  </Select>
+          <div className="form-group">
+            <label htmlFor="email">E-Mail *</label>
+            <input
+              className={errors.email ? "input-error" : ""}
+              id="email"
+              name="email"
+              type="email"
+              value={formData.email}
+              onChange={handleChange}
+            />
+            {errors.email && (
+              <span className="error-message">{errors.email}</span>
+            )}
+          </div>
 
-                  <Select
-                    classNames={{
-                      trigger: "h-12",
-                    }}
-                    label="Status"
-                    placeholder="Status auswählen"
-                    selectedKeys={[formData.status]}
-                    startContent={
-                      <CheckCircle className="text-default-400" size={18} />
-                    }
-                    variant="bordered"
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        status: e.target.value as Guest["status"],
-                      })
-                    }
-                  >
-                    <SelectItem key="Ausstehend" value="Ausstehend">
-                      Ausstehend
-                    </SelectItem>
-                    <SelectItem key="Zugesagt" value="Zugesagt">
-                      Zugesagt
-                    </SelectItem>
-                    <SelectItem key="Abgesagt" value="Abgesagt">
-                      Abgesagt
-                    </SelectItem>
-                  </Select>
-                </div>
-              </div>
-            </ModalBody>
-            <Divider />
-            <ModalFooter className="pt-4">
-              <Button size="lg" variant="flat" onPress={handleClose}>
-                Abbrechen
-              </Button>
-              <Button
-                color="primary"
-                size="lg"
-                startContent={<UserPlus size={18} />}
-                onPress={handleSubmit}
-              >
-                Gast hinzufügen
-              </Button>
-            </ModalFooter>
-          </>
-        )}
-      </ModalContent>
-    </Modal>
+          <div className="form-group">
+            <label htmlFor="rolle">Rolle</label>
+            <select
+              id="rolle"
+              name="rolle"
+              value={formData.rolle}
+              onChange={handleChange}
+            >
+              <option value="Gast">Gast</option>
+              <option value="VIP">VIP</option>
+              <option value="Sponsor">Sponsor</option>
+              <option value="Presenter">Presenter</option>
+              <option value="Arbeiter">Arbeiter</option>
+            </select>
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="status">Status</label>
+            <select
+              id="status"
+              name="status"
+              value={formData.status}
+              onChange={handleChange}
+            >
+              <option value="Ausstehend">Ausstehend</option>
+              <option value="Zugesagt">Zugesagt</option>
+              <option value="Abgesagt">Abgesagt</option>
+            </select>
+          </div>
+
+          <div className="modal-actions">
+            <button className="btn-secondary" type="button" onClick={onClose}>
+              Abbrechen
+            </button>
+            <button className="btn-primary" type="submit">
+              Gast hinzufügen
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
   );
 };
 

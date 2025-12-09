@@ -1,6 +1,4 @@
 import React from "react";
-import { Card, CardBody, Input, Select, SelectItem } from "@heroui/react";
-import { Search } from "lucide-react";
 
 interface GuestListFiltersProps {
   searchTerm: string;
@@ -23,47 +21,44 @@ const GuestListFilters: React.FC<GuestListFiltersProps> = ({
   const statuses = ["Alle Status", "Zugesagt", "Abgesagt", "Ausstehend"];
 
   return (
-    <Card className="mb-6">
-      <CardBody>
-        <div className="flex flex-col md:flex-row gap-4">
-          <Input
-            isClearable
-            className="flex-1"
-            placeholder="Nach Namen oder E-Mail suchen..."
-            startContent={<Search className="text-default-400" size={18} />}
-            value={searchTerm}
-            onClear={() => onSearch("")}
-            onValueChange={onSearch}
-          />
+    <div className="guest-list-filters">
+      <div className="search-box">
+        <span className="search-icon">🔍</span>
+        <input
+          className="search-input"
+          placeholder="Nach Namen oder E-Mail suchen..."
+          type="text"
+          value={searchTerm}
+          onChange={(e) => onSearch(e.target.value)}
+        />
+      </div>
 
-          <Select
-            className="w-full md:w-48"
-            placeholder="Rolle wählen"
-            selectedKeys={[roleFilter]}
-            onChange={(e) => onRoleFilter(e.target.value)}
-          >
-            {roles.map((role) => (
-              <SelectItem key={role} value={role}>
-                {role}
-              </SelectItem>
-            ))}
-          </Select>
+      <div className="filter-group">
+        <select
+          className="filter-select"
+          value={roleFilter}
+          onChange={(e) => onRoleFilter(e.target.value)}
+        >
+          {roles.map((role) => (
+            <option key={role} value={role}>
+              {role}
+            </option>
+          ))}
+        </select>
 
-          <Select
-            className="w-full md:w-48"
-            placeholder="Status wählen"
-            selectedKeys={[statusFilter]}
-            onChange={(e) => onStatusFilter(e.target.value)}
-          >
-            {statuses.map((status) => (
-              <SelectItem key={status} value={status}>
-                {status}
-              </SelectItem>
-            ))}
-          </Select>
-        </div>
-      </CardBody>
-    </Card>
+        <select
+          className="filter-select"
+          value={statusFilter}
+          onChange={(e) => onStatusFilter(e.target.value)}
+        >
+          {statuses.map((status) => (
+            <option key={status} value={status}>
+              {status}
+            </option>
+          ))}
+        </select>
+      </div>
+    </div>
   );
 };
 

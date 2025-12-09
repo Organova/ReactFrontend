@@ -1,152 +1,89 @@
-import React from "react";
-import {
-  Table,
-  TableHeader,
-  TableColumn,
-  TableBody,
-  TableRow,
-  TableCell,
-  Card,
-  CardBody,
-  Chip,
-  Button,
-  Tooltip,
-} from "@heroui/react";
-import { Trash2, Users, Edit } from "lucide-react";
+import React, { useState } from "react";
+
+import GuestTableRow from "./GuestTableRow";
 
 import { Guest } from "@/types/guest";
 
 interface GuestTableProps {
   guests: Guest[];
   onRemoveGuest: (id: string) => void;
-  onEditGuest: (id: string) => void;
 }
 
-const GuestTable: React.FC<GuestTableProps> = ({
-  guests,
-  onRemoveGuest,
-  onEditGuest,
-}) => {
-  const getRoleColor = (rolle: string) => {
-    const colorMap: {
-      [key: string]: "success" | "warning" | "secondary" | "primary" | "danger";
-    } = {
-      Gast: "success",
-      VIP: "warning",
-      Sponsor: "secondary",
-      Arbeiter: "primary",
-    };
+const GuestTable: React.FC<GuestTableProps> = ({ guests, onRemoveGuest }) => {
+  const [sortField, setSortField] = useState<keyof Guest | null>(null);
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
 
-    return colorMap[rolle] || "default";
-  };
-
-  const getStatusColor = (status: string) => {
-    const colorMap: { [key: string]: "success" | "danger" | "warning" } = {
-      Zugesagt: "success",
-      Abgesagt: "danger",
-      Ausstehend: "warning",
-    };
-
-    return colorMap[status] || "default";
-  };
-
-  const handleRemove = (id: string, name: string) => {
-    if (window.confirm(`Möchten Sie ${name} wirklich entfernen?`)) {
-      onRemoveGuest(id);
+  const handleSort = (field: keyof Guest) => {
+    if (sortField === field) {
+      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
+    } else {
+      setSortField(field);
+      setSortDirection("asc");
     }
   };
 
+  const sortedGuests = [...guests].sort((a, b) => {
+    if (!sortField) return 0;
+
+    const aValue = a[sortField];
+    const bValue = b[sortField];
+
+    if (aValue < bValue) return sortDirection === "asc" ? -1 : 1;
+    if (aValue > bValue) return sortDirection === "asc" ? 1 : -1;
+
+    return 0;
+  });
+
   if (guests.length === 0) {
     return (
-      <Card>
-        <CardBody>
-          <div className="flex flex-col items-center justify-center py-12">
-            <Users className="text-default-300 mb-4" size={64} />
-            <h3 className="text-xl font-semibold text-default-700 mb-2">
-              Keine Gäste gefunden
-            </h3>
-            <p className="text-default-500 text-center">
-              Fügen Sie Ihren ersten Gast hinzu oder passen Sie Ihre Filter an.
-            </p>
-          </div>
-        </CardBody>
-      </Card>
+      <div className="empty-state">
+        <span className="empty-icon">👥</span>
+        <h3>Keine Gäste gefunden</h3>
+        <p>Fügen Sie Ihren ersten Gast hinzu oder passen Sie Ihre Filter an.</p>
+      </div>
     );
   }
 
   return (
-    <Card>
-      <CardBody className="p-0">
-        <Table removeWrapper aria-label="Gästeliste">
-          <TableHeader>
-            <TableColumn>VORNAME</TableColumn>
-            <TableColumn>NACHNAME</TableColumn>
-            <TableColumn>E-MAIL</TableColumn>
-            <TableColumn>ROLLE</TableColumn>
-            <TableColumn>STATUS</TableColumn>
-            <TableColumn align="center">AKTIONEN</TableColumn>
-          </TableHeader>
-          <TableBody>
-            {guests.map((guest) => (
-              <TableRow key={guest.id}>
-                <TableCell className="font-medium">{guest.vorname}</TableCell>
-                <TableCell className="font-medium">{guest.nachname}</TableCell>
-                <TableCell className="text-primary">{guest.email}</TableCell>
-                <TableCell>
-                  <Chip
-                    color={getRoleColor(guest.rolle)}
-                    size="sm"
-                    variant="flat"
-                  >
-                    {guest.rolle}
-                  </Chip>
-                </TableCell>
-                <TableCell>
-                  <Chip
-                    color={getStatusColor(guest.status)}
-                    size="sm"
-                    variant="flat"
-                  >
-                    {guest.status}
-                  </Chip>
-                </TableCell>
-                <TableCell>
-                  <div className="flex justify-center gap-2">
-                    <Tooltip color="primary" content="Gast bearbeiten">
-                      <Button
-                        isIconOnly
-                        color="primary"
-                        size="sm"
-                        variant="light"
-                        onPress={() => onEditGuest(guest.id)}
-                      >
-                        <Edit size={18} />
-                      </Button>
-                    </Tooltip>
-                    <Tooltip color="danger" content="Gast entfernen">
-                      <Button
-                        isIconOnly
-                        color="danger"
-                        size="sm"
-                        variant="light"
-                        onPress={() =>
-                          handleRemove(
-                            guest.id,
-                            `${guest.vorname} ${guest.nachname}`,
-                          )
-                        }
-                      >
-                        <Trash2 size={18} />
-                      </Button>
-                    </Tooltip>
-                  </div>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </CardBody>
-    </Card>
+    <div className="guest-table-container">
+      <table className="guest-table">
+        <thead>
+          <tr>
+            <th className="sortable" onClick={() => handleSort("vorname")}>
+              Vorname{" "}
+              {sortField === "vorname" && (sortDirection === "asc" ? "↑" : "↓")}
+            </th>
+            <th className="sortable" onClick={() => handleSort("nachname")}>
+              Nachname{" "}
+              {sortField === "nachname" &&
+                (sortDirection === "asc" ? "↑" : "↓")}
+            </th>
+            <th className="sortable" onClick={() => handleSort("email")}>
+              E-Mail{" "}
+              {sortField === "email" && (sortDirection === "asc" ? "↑" : "↓")}
+            </th>
+            <th className="sortable" onClick={() => handleSort("rolle")}>
+              Rolle{" "}
+              {sortField === "rolle" && (sortDirection === "asc" ? "↑" : "↓")}
+            </th>
+            <th className="sortable" onClick={() => handleSort("status")}>
+              Status{" "}
+              {sortField === "status" && (sortDirection === "asc" ? "↑" : "↓")}
+            </th>
+            <th>Aktionen</th>
+          </tr>
+        </thead>
+        <tbody>
+          {sortedGuests.map((guest) => (
+            <GuestTableRow
+              key={guest.id}
+              guest={guest}
+              onRemove={() => onRemoveGuest(guest.id)}
+            />
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 };
 

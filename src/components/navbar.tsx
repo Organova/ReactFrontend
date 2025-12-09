@@ -38,9 +38,9 @@ export const Navbar = () => {
 
   return (
     <HeroUINavbar
+      className={"shouldHideOnScroll isBordered"}
       maxWidth="full"
       position="sticky"
-      className={"shouldHideOnScroll isBordered"}
     >
       <NavbarContent className="basis-1/5 sm:basis-full" justify="start">
         <NavbarBrand className="gap-3 max-w-fit">

@@ -21,7 +21,7 @@ const SidebarItem = ({ icon, text, active, alert, onclick }) => {
     `}
       onClick={onclick}
     >
-      <Icon size={20} />
+      <Icon size={25} />
       <span
         className={`overflow-hidden transition-all ${isOpen ? "w-52 ml-3" : "w-0"}`}
       >
