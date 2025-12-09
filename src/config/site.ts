@@ -1,9 +1,10 @@
 import {
-  BarChart3,
   Boxes,
+  Calendar,
   LayoutDashboard,
   Package,
   UserCircle,
+  Users,
 } from "lucide-react";
 
 import { SidebarItem } from "@/types/common.ts";
@@ -37,12 +38,20 @@ export const siteConfig = {
       active: true,
     },
     {
-      id: "Statistics",
-      icon: BarChart3,
-      text: "Statistics",
-      alert: true,
-      active: false,
+      id: "Events",
+      text: "Events",
       path: "/events",
+      icon: Calendar,
+      alert: false,
+      active: false,
+    },
+    {
+      id: "Guests",
+      icon: Users,
+      text: "Guests",
+      alert: false,
+      active: false,
+      path: "/guests",
     },
     {
       id: "Users",
