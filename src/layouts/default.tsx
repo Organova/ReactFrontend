@@ -12,8 +12,10 @@ export default function DefaultLayout({
     <div className="relative flex flex-col h-screen">
       <Navbar />
       <div className="flex flex-1 overflow-hidden">
-        <Sidebar />
-        <main className="flex-1 overflow-y-auto container mx-auto max-w-7xl px-6 py-16">
+        <div className="flex-shrink-0">
+          <Sidebar />
+        </div>
+        <main className="flex-1 min-w-0 overflow-y-auto px-6 py-16">
           {children}
         </main>
       </div>

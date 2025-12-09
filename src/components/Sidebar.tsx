@@ -1,5 +1,7 @@
 import { ChevronFirst, ChevronLast, MoreVertical } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { Avatar } from "@heroui/avatar";
+import { Divider } from "@heroui/react";
 
 import SidebarItem from "@/components/SidebarItem.tsx";
 import { useSidebarStore } from "@/stores/sidebarStore.ts";
@@ -9,8 +11,8 @@ const Sidebar = () => {
   const navigate = useNavigate();
 
   const children = items.map((item) => (
-    // eslint-disable-next-line react/jsx-key
     <SidebarItem
+      key={item.id}
       active={item.active}
       alert={item.alert}
       icon={item.icon}
@@ -23,9 +25,11 @@ const Sidebar = () => {
   ));
 
   return (
-    <aside className="h-full ">
+    <aside
+      className={`h-full transition-all duration-200 ease-in-out ${isOpen ? "w-52" : "w-14"} flex-shrink-0`}
+    >
       <nav className="h-full flex flex-col shadow-sm">
-        <div className="p-4 pb-2 flex justify-between items-center">
+        <div className="p-4 pb-2 flex items-center justify-between">
           <h4
             className={`overflow-hidden transition-all ${isOpen ? "w-32" : "w-0"}`}
           >
@@ -39,20 +43,20 @@ const Sidebar = () => {
           </button>
         </div>
 
-        <ul className="flex-1 px-3 ">{children}</ul>
+        <ul className="flex-1 px-1">{children}</ul>
 
-        <div className={`border-t flex p-3 `}>
-          <img
-            alt="John Doe"
-            className="w-10 h-10 rounded-md"
-            src="https://ui-avatars.com/api/?name=John+Doe"
-          />
-          <div
-            className={`flex justify-between items-center overflow-hidden transition-all ${isOpen ? "w-52 ml-3" : "w-0"}`}
-          >
-            <div className="leading-4">
-              <h4 className="font-semibold">John Doe</h4>
-              <span className="text-xs ">johndoe@gmail.com</span>
+        <Divider className="w-full" />
+
+        <div className="flex items-center p-4">
+          <Avatar className="md flex-shrink-0" name="John Doe" />
+          <div className="ml-3 flex-1 min-w-0 flex items-center justify-between">
+            <div
+              className={`overflow-hidden transition-all ${isOpen ? "w-full" : "w-0"}`}
+            >
+              <div className="leading-4">
+                <h4 className="font-semibold">John Doe</h4>
+                <span className="text-xs">johndoe@gmail.com</span>
+              </div>
             </div>
             <MoreVertical size={20} />
           </div>
