@@ -1,64 +1,83 @@
+import {
+  Boxes,
+  Calendar,
+  LayoutDashboard,
+  Package,
+  UserCircle,
+  Users,
+} from "lucide-react";
+
+import { SidebarItem } from "@/types/common.ts";
+
 export type SiteConfig = typeof siteConfig;
 
 export const siteConfig = {
-  name: "Vite + HeroUI",
-  description: "Make beautiful websites regardless of your design experience.",
+  name: "Organova",
+  description: "Organize Events with Ease",
   navItems: [
     {
       label: "Home",
       href: "/",
     },
     {
-      label: "Docs",
-      href: "/docs",
+      label: "Events",
+      href: "/events",
     },
     {
-      label: "Pricing",
-      href: "/pricing",
-    },
-    {
-      label: "Blog",
-      href: "/blog",
-    },
-    {
-      label: "About",
-      href: "/about",
+      label: "Modules",
+      href: "/modules",
     },
   ],
-  navMenuItems: [
+  sideBarItems: [
     {
-      label: "Profile",
-      href: "/profile",
+      id: "Dashboard",
+      text: "Dashboard",
+      path: "/",
+      icon: LayoutDashboard,
+      alert: false,
+      active: true,
     },
     {
-      label: "Dashboard",
-      href: "/dashboard",
+      id: "Events",
+      text: "Events",
+      path: "/events",
+      icon: Calendar,
+      alert: false,
+      active: false,
     },
     {
-      label: "Projects",
-      href: "/projects",
+      id: "Guests",
+      icon: Users,
+      text: "Guests",
+      alert: false,
+      active: false,
+      path: "/guests",
     },
     {
-      label: "Team",
-      href: "/team",
+      id: "Users",
+      icon: UserCircle,
+      text: "Users",
+      alert: false,
+      active: false,
+      path: "/modules",
     },
     {
-      label: "Calendar",
-      href: "/calendar",
+      id: "Inventory",
+      icon: Boxes,
+      text: "Inventory",
+      alert: false,
+      active: false,
+      path: "/",
     },
     {
-      label: "Settings",
-      href: "/settings",
+      id: "Orders",
+      icon: Package,
+      text: "Orders",
+      alert: false,
+      active: false,
+      path: "/",
     },
-    {
-      label: "Help & Feedback",
-      href: "/help-feedback",
-    },
-    {
-      label: "Logout",
-      href: "/logout",
-    },
-  ],
+  ] as SidebarItem[],
   links: {
     github: "https://github.com/heroui-inc/heroui",
     twitter: "https://twitter.com/hero_ui",
