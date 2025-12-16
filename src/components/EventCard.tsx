@@ -32,9 +32,9 @@ const EventCard: React.FC<EventProps> = (props) => {
       <CardFooter
         className={"container flex flex-wrap items-center gap-4 justify-center"}
       >
-        <button className="btn-primary">Edit</button>
-        <button className="btn-primary">Add Guest</button>
-        <button className="btn-primary">Stats</button>
+        <button className="btn-primary cursor-pointer">Edit</button>
+        <button className="btn-primary cursor-pointer">Add Guest</button>
+        <button className="btn-primary cursor-pointer">Stats</button>
       </CardFooter>
     </Card>
   );
