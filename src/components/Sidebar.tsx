@@ -1,7 +1,6 @@
 import { ChevronFirst, ChevronLast, MoreVertical } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { Avatar } from "@heroui/avatar";
-import { Divider } from "@heroui/react";
+import { Divider, Avatar} from "@heroui/react";
 
 import SidebarItem from "@/components/SidebarItem.tsx";
 import { useSidebarStore } from "@/stores/sidebarStore.ts";

@@ -1,5 +1,5 @@
 import {create} from "zustand";
-import {EventProps} from "@/types/common.ts";
+import {Event} from "@/types/common.ts";
 
 type eventStore = {
     loading: boolean

@@ -7,7 +7,7 @@ export type SidebarItem = {
   active: boolean;
 };
 
-export type EventProps = {
+export type Event = {
   id: number;
   name: string;
   description: string;
