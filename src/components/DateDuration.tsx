@@ -4,6 +4,8 @@ type Duration = {
 }
 
 const DateDuration: React.FC<Duration> = (props) => {
+    //console.log(props.startDate)
+
   return (
     <div className={"flex gap-3"}>
       <div className="flex-none border-1 border-default-200/50 rounded-small text-center w-11 overflow-hidden">
