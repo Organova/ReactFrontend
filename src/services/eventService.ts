@@ -24,11 +24,24 @@ export class EventService {
             estimatedGuests: 0,
             startDate: event.startDate.toISOString(),
             endDate: event.endDate.toISOString(),
+            timeZone: "UTC"
         }
 
         console.log(payload)
 
         const response = await api_client.post<Event[]>("/events",payload, {
+            headers: {
+                "X-Tenant-Id": tenantId,
+                Authorization: authToken
+            }})
+        console.log(response)
+        return response.data
+    }
+
+    static async deleteEvent(tenantId:string, token:string, eventId: number) {
+        const authToken = "Bearer " + token
+
+        const response = await api_client.delete<Event[]>("/events/" + eventId, {
             headers: {
                 "X-Tenant-Id": tenantId,
                 Authorization: authToken

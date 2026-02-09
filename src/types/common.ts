@@ -51,5 +51,6 @@ export type CreateEventDto = {
     estimatedGuests: number;
     startDate: string;   // ISO
     endDate: string;     // ISO
+    timeZone: string;
     guestIds?: string[];
 };

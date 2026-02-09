@@ -1,12 +1,17 @@
-import { ChevronFirst, ChevronLast, MoreVertical } from "lucide-react";
+import { ChevronFirst, ChevronLast } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { Divider, Avatar} from "@heroui/react";
+import { Divider} from "@heroui/react";
 
 import SidebarItem from "@/components/SidebarItem.tsx";
 import { useSidebarStore } from "@/stores/sidebarStore.ts";
+import UserAvatar from "@/components/UserAvatar.tsx";
+import useUserStore from "@/stores/useUserStore.ts";
+import UserLogIn from "@/components/UserLogIn.tsx";
 
 const Sidebar = () => {
   const { isOpen, toggleOpen, items, toggleActive } = useSidebarStore();
+  const {loggedIn} = useUserStore()
+
   const navigate = useNavigate();
 
   const children = items.map((item) => (
@@ -47,18 +52,7 @@ const Sidebar = () => {
         <Divider className="w-full" />
 
         <div className="flex items-center p-4">
-          <Avatar className="md flex-shrink-0" name="John Doe" />
-          <div className="ml-3 flex-1 min-w-0 flex items-center justify-between">
-            <div
-              className={`overflow-hidden transition-all ${isOpen ? "w-full" : "w-0"}`}
-            >
-              <div className="leading-4">
-                <h4 className="font-semibold">John Doe</h4>
-                <span className="text-xs">johndoe@gmail.com</span>
-              </div>
-            </div>
-            <MoreVertical size={20} />
-          </div>
+            {loggedIn ? <UserAvatar/> : <UserLogIn/>}
         </div>
       </nav>
     </aside>

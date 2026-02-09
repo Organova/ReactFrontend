@@ -1,6 +1,7 @@
 import {create} from "zustand";
 import {Event} from "@/types/common.ts";
 import {EventService} from "@/services/eventService.ts";
+import useUserStore from "@/stores/useUserStore.ts";
 
 type eventStore = {
     loading: boolean
@@ -8,8 +9,9 @@ type eventStore = {
     selectedEvent: Event | null
     events: Event[] | undefined
     setSelectedEvent: (event: Event) => void
-    fetchEvents: (tenantId: string, token: string) => void
-    createEvent: (tenantId: string, token: string, event: Event) => void
+    fetchEvents: () => void
+    createEvent: (event: Event) => void
+    deleteEvent: (eventId: number) => void
 }
 
 export default create<eventStore>((set) => ({
@@ -18,7 +20,9 @@ export default create<eventStore>((set) => ({
     loading: false,
     error: "",
     setSelectedEvent: (event: Event) => {set({selectedEvent: event})},
-    fetchEvents: async (tenantId: string, token: string) => {
+    fetchEvents: async () => {
+        const {tenantId, token} = useUserStore.getState()
+
         set({loading: true})
         let events
         try {
@@ -34,9 +38,21 @@ export default create<eventStore>((set) => ({
             })
         }
     },
-    createEvent: async (tenantId: string, token: string, event: Event) => {
+    createEvent: async (event: Event) => {
+        const {tenantId, token} = useUserStore.getState()
+
         try {
             EventService.createEvent(tenantId, token, event)
+        } catch (e) {
+            // @ts-ignore
+            set({error: e.message})
+        }
+    },
+    deleteEvent: async (eventId: number) => {
+        const {tenantId, token} = useUserStore.getState()
+
+        try {
+            EventService.deleteEvent(tenantId, token, eventId)
         } catch (e) {
             // @ts-ignore
             set({error: e.message})

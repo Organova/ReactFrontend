@@ -12,18 +12,26 @@ import {
   useDisclosure,
 } from "@heroui/react";
 import DateDuration from "@/components/DateDuration.tsx";
+import useEventStore from "@/stores/useEventStore.ts";
 
 const EventCard: React.FC<Event> = (event) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const {deleteEvent} = useEventStore()
 
   const handleClick = () => {
     console.log("Clicked: " + event.name);
     onOpen()
   };
 
+  const handleDelete = () => {
+      console.log("Deleted Event: " + event.id)
+      deleteEvent(event.id)
+      onClose()
+  }
+
   return (
     <>
-      <Card className="py-4" isPressable onPress={() => handleClick()}>
+      <Card className="py-4 w-full" isPressable onPress={() => handleClick()}>
         <CardHeader className="pb-0 pt-2 px-4 flex-col items-start">
           <h4 className="font-bold text-large">{event.name}</h4>
         </CardHeader>
@@ -32,15 +40,15 @@ const EventCard: React.FC<Event> = (event) => {
         </CardBody>
       </Card>
 
-      <Modal backdrop={"blur"} isOpen={isOpen} onClose={onClose} className={"dark"}>
+      <Modal backdrop={"blur"} isOpen={isOpen} onClose={onClose} className={"dark text-foreground"}>
         <ModalContent>
           {(onClose) => (
             <>
-              <ModalHeader className={"inline text-foreground text-3xl"}>
+              <ModalHeader className={"inline text-3xl"}>
                 {event.name}
                 <Divider className={"mt-2"}/>
               </ModalHeader>
-              <ModalBody className={"text-foreground text-small"}>
+              <ModalBody className={"text-small"}>
                 <h2 className="text-large font-bold">Description</h2>
                 {event.description}
                 <DateDuration startDate={event.startDate} endDate={event.endDate}/>
@@ -49,7 +57,7 @@ const EventCard: React.FC<Event> = (event) => {
               <ModalFooter>
                 <Button color="primary" variant="ghost" onPress={onClose}>Select</Button>
                 <Button color="primary" variant="ghost" onPress={onClose}>Edit</Button>
-                <Button color="danger" variant="ghost" onPress={onClose}>Close</Button>
+                <Button color="danger" variant="solid" onPress={() => handleDelete()}>Delete</Button>
               </ModalFooter>
             </>
           )}

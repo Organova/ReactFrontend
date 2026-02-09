@@ -2,6 +2,7 @@ import {create} from "zustand";
 import {UserService} from "@/services/userService.ts";
 
 type eventStore = {
+    loggedIn: boolean;
     loading: boolean;
     error: string;
     username: string;
@@ -22,6 +23,7 @@ type eventStore = {
 };
 
 export default create<eventStore>((set, get) => ({
+    loggedIn: false,
     loading: false,
     error: "",
     username: "admin",
@@ -34,9 +36,9 @@ export default create<eventStore>((set, get) => ({
     setFirstName: (firstName: string) => set({ firstName }),
     lastName: "Lindner",
     setSetLastName: (lastName: string) => set({ lastName }),
-    id: "90a77924-b0c1-4345-a2bd-ef5d7da99ab0",
-    tenantId: "34284f71-b6af-4dfb-8f79-1a761a8aea14",
-    token: "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI5MGE3NzkyNC1iMGMxLTQzNDUtYTJiZC1lZjVkN2RhOTlhYjAiLCJpYXQiOjE3NzAxMjkzMzgsImV4cCI6MTc3MDEzMjkzOH0.0I7pln6iXl6biM9pIliOGk6ZPEAQdgYH59_9YEgDi7M",
+    id: "4d96c689-ccb3-4cdb-93e4-6a92c0dde86e",
+    tenantId: "556440b7-a75f-407b-abb2-1c1efccf662f",
+    token: "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI0ZDk2YzY4OS1jY2IzLTRjZGItOTNlNC02YTkyYzBkZGU4NmUiLCJpYXQiOjE3NzA2NDAwMDMsImV4cCI6MTc3MDY0MzYwM30.szuQepDc6L9665SXE9nXAtNR_jLyaesn2zozatEK3xY",
     login: async () => {
         set({ loading: true, error: "" });
         try {
@@ -47,6 +49,7 @@ export default create<eventStore>((set, get) => ({
                 token: (response && (response as any).token) || "",
                 id: (response && (response as any).id) || "",
                 loading: false,
+                loggedIn: true
             });
         } catch (err: any) {
             set({ error: err?.message || "Login fehlgeschlagen", loading: false });
@@ -68,6 +71,7 @@ export default create<eventStore>((set, get) => ({
                 id: (response && (response as any).id) || "",
                 tenantId: (response && (response as any).tenantId || ""),
                 loading: false,
+                loggedIn: true
             });
         } catch (err: any) {
             set({ error: err?.message || "Signup fehlgeschlagen", loading: false });
