@@ -1,12 +1,12 @@
 import React, { useState } from "react";
+import { Tabs, Tab } from "@heroui/react";
+import { Users, Ticket } from "lucide-react";
 
 import GuestListHeader from "@/components/GuestListHeader";
-import GuestListFilters from "@/components/GuestListFilters";
-import GuestTable from "@/components/GuestTable";
-import AddGuestModal from "@/components/AddGuestModal";
-import EditGuestModal from "@/components/EditGuestModal";
-import { Guest } from "@/types/guest";
-import DefaultLayout from "@/layouts/default.tsx";
+import KnownGuestsTab from "@/components/KnownGuestsTab";
+import TicketContingentTab from "@/components/TicketContingentTab";
+import { Guest, EstimatedGuests } from "@/types/guest";
+import DefaultLayout from "@/layouts/default";
 
 const GuestListPage: React.FC = () => {
   const [guests, setGuests] = useState<Guest[]>([
@@ -171,109 +171,76 @@ const GuestListPage: React.FC = () => {
       status: "Zugesagt",
     },
   ]);
-  const [filteredGuests, setFilteredGuests] = useState<Guest[]>(guests);
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [selectedGuest, setSelectedGuest] = useState<Guest | null>(null);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [roleFilter, setRoleFilter] = useState("Alle Rollen");
-  const [statusFilter, setStatusFilter] = useState("Alle Status");
 
-  const applyFilters = (
-    search: string,
-    role: string,
-    status: string,
-    guestList: Guest[],
-  ) => {
-    let filtered = [...guestList];
+  const [estimatedGuests, setEstimatedGuests] = useState<EstimatedGuests[]>([
+    {
+      id: "1",
+      anzahl: 20,
+      verkauftVon: "Max Mustermann",
+      rolle: "Gast",
+    },
+  ]);
 
-    if (search) {
-      filtered = filtered.filter(
-        (guest) =>
-          guest.vorname.toLowerCase().includes(search.toLowerCase()) ||
-          guest.nachname.toLowerCase().includes(search.toLowerCase()) ||
-          guest.email.toLowerCase().includes(search.toLowerCase()),
-      );
-    }
+  const [activeTab, setActiveTab] = useState("known");
 
-    if (role !== "Alle Rollen") {
-      filtered = filtered.filter((guest) => guest.rolle === role);
-    }
+  // Statistiken berechnen
+  const totalEstimatedCount = estimatedGuests.reduce(
+    (sum, eg) => sum + eg.anzahl,
+    0,
+  );
+  const totalGuests = guests.length + totalEstimatedCount;
+  const knownGuests = guests.length;
+  const checkedInGuests = guests.filter((g) => g.status === "Zugesagt").length;
 
-    if (status !== "Alle Status") {
-      filtered = filtered.filter((guest) => guest.status === status);
-    }
-
-    setFilteredGuests(filtered);
-  };
-
-  const handleSearch = (term: string) => {
-    setSearchTerm(term);
-    applyFilters(term, roleFilter, statusFilter, guests);
-  };
-
-  const handleRoleFilter = (role: string) => {
-    setRoleFilter(role);
-    applyFilters(searchTerm, role, statusFilter, guests);
-  };
-
-  const handleStatusFilter = (status: string) => {
-    setStatusFilter(status);
-    applyFilters(searchTerm, roleFilter, status, guests);
-  };
-
-  const handleAddGuest = (newGuest: Omit<Guest, "id">) => {
-    const guestWithId = {
-      ...newGuest,
-      id: Date.now().toString(),
+  // Rollenverteilung
+  const getRoleStats = () => {
+    const stats: { [key: string]: number } = {
+      Gast: 0,
+      VIP: 0,
+      Sponsor: 0,
+      Arbeiter: 0,
     };
-    const updatedGuests = [...guests, guestWithId];
 
-    setGuests(updatedGuests);
-    applyFilters(searchTerm, roleFilter, statusFilter, updatedGuests);
-    setIsAddModalOpen(false);
-  };
+    // Bekannte Gäste zählen
+    guests.forEach((guest) => {
+      stats[guest.rolle]++;
+    });
 
-  const handleEditGuest = (id: string) => {
-    const guest = guests.find((g) => g.id === id);
+    // Geschätzte Gäste zählen
+    estimatedGuests.forEach((eg) => {
+      stats[eg.rolle] += eg.anzahl;
+    });
 
-    if (guest) {
-      setSelectedGuest(guest);
-      setIsEditModalOpen(true);
-    }
-  };
-
-  const handleUpdateGuest = (updatedGuest: Guest) => {
-    const updatedGuests = guests.map((guest) =>
-      guest.id === updatedGuest.id ? updatedGuest : guest,
-    );
-
-    setGuests(updatedGuests);
-    applyFilters(searchTerm, roleFilter, statusFilter, updatedGuests);
-    setIsEditModalOpen(false);
-    setSelectedGuest(null);
-  };
-
-  const handleRemoveGuest = (id: string) => {
-    const updatedGuests = guests.filter((guest) => guest.id !== id);
-
-    setGuests(updatedGuests);
-    applyFilters(searchTerm, roleFilter, statusFilter, updatedGuests);
+    return stats;
   };
 
   const handleExport = () => {
-    const headers = ["Vorname", "Nachname", "E-Mail", "Rolle", "Status"];
+    // Export für bekannte Gäste
+    const guestHeaders = ["Vorname", "Nachname", "E-Mail", "Rolle", "Status"];
+    const guestRows = guests.map((guest) =>
+      [
+        guest.vorname,
+        guest.nachname,
+        guest.email,
+        guest.rolle,
+        guest.status,
+      ].join(","),
+    );
+
+    // Export für Kartenverkauf
+    const contingentHeaders = ["Anzahl", "Verkauft von", "Rolle"];
+    const contingentRows = estimatedGuests.map((eg) =>
+      [eg.anzahl, eg.verkauftVon, eg.rolle].join(","),
+    );
+
     const csvContent = [
-      headers.join(","),
-      ...filteredGuests.map((guest) =>
-        [
-          guest.vorname,
-          guest.nachname,
-          guest.email,
-          guest.rolle,
-          guest.status,
-        ].join(","),
-      ),
+      "=== BEKANNTE GÄSTE ===",
+      guestHeaders.join(","),
+      ...guestRows,
+      "",
+      "=== KARTENVERKAUF ===",
+      contingentHeaders.join(","),
+      ...contingentRows,
     ].join("\n");
 
     const blob = new Blob([csvContent], { type: "text/csv" });
@@ -281,57 +248,73 @@ const GuestListPage: React.FC = () => {
     const a = document.createElement("a");
 
     a.href = url;
-    a.download = "gaesteliste.csv";
+    a.download = "gaesteliste_komplett.csv";
     a.click();
   };
-
-  const zugesagtCount = guests.filter((g) => g.status === "Zugesagt").length;
-  const zugesagtPercentage =
-    guests.length > 0 ? Math.round((zugesagtCount / guests.length) * 100) : 0;
 
   return (
     <DefaultLayout>
       <div className="container mx-auto px-4 py-8 max-w-7xl">
         <GuestListHeader
-          confirmationRate={zugesagtPercentage}
-          confirmedGuests={zugesagtCount}
-          totalGuests={guests.length}
-          onAddGuest={() => setIsAddModalOpen(true)}
+          checkedInGuests={checkedInGuests}
+          knownGuests={knownGuests}
+          roleStats={getRoleStats()}
+          ticketContingents={totalEstimatedCount}
+          totalGuests={totalGuests}
           onExport={handleExport}
         />
 
-        <GuestListFilters
-          roleFilter={roleFilter}
-          searchTerm={searchTerm}
-          statusFilter={statusFilter}
-          onRoleFilter={handleRoleFilter}
-          onSearch={handleSearch}
-          onStatusFilter={handleStatusFilter}
-        />
+        <Tabs
+          aria-label="Gästeverwaltung"
+          classNames={{
+            tabList:
+              "gap-6 w-full relative rounded-none p-0 border-b border-divider",
+            cursor: "w-full bg-primary",
+            tab: "max-w-fit px-4 h-12",
+            tabContent: "group-data-[selected=true]:text-primary",
+          }}
+          selectedKey={activeTab}
+          size="lg"
+          variant="underlined"
+          onSelectionChange={(key) => setActiveTab(key as string)}
+        >
+          <Tab
+            key="known"
+            title={
+              <div className="flex items-center gap-2">
+                <Users size={18} />
+                <span>Bekannte Gäste</span>
+                <span className="text-xs bg-default-100 px-2 py-0.5 rounded-full">
+                  {guests.length}
+                </span>
+              </div>
+            }
+          >
+            <div className="py-6">
+              <KnownGuestsTab guests={guests} onGuestsChange={setGuests} />
+            </div>
+          </Tab>
 
-        <GuestTable
-          guests={filteredGuests}
-          onEditGuest={handleEditGuest}
-          onRemoveGuest={handleRemoveGuest}
-        />
-
-        <AddGuestModal
-          isOpen={isAddModalOpen}
-          onAddGuest={handleAddGuest}
-          onClose={() => setIsAddModalOpen(false)}
-        />
-
-        {selectedGuest && (
-          <EditGuestModal
-            guest={selectedGuest}
-            isOpen={isEditModalOpen}
-            onClose={() => {
-              setIsEditModalOpen(false);
-              setSelectedGuest(null);
-            }}
-            onUpdateGuest={handleUpdateGuest}
-          />
-        )}
+          <Tab
+            key="contingent"
+            title={
+              <div className="flex items-center gap-2">
+                <Ticket size={18} />
+                <span>Kartenverkauf</span>
+                <span className="text-xs bg-default-100 px-2 py-0.5 rounded-full">
+                  {totalEstimatedCount}
+                </span>
+              </div>
+            }
+          >
+            <div className="py-6">
+              <TicketContingentTab
+                estimatedGuests={estimatedGuests}
+                onEstimatedGuestsChange={setEstimatedGuests}
+              />
+            </div>
+          </Tab>
+        </Tabs>
       </div>
     </DefaultLayout>
   );
