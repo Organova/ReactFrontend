@@ -10,6 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "-": "^0.0.1",
     "@heroui/button": "2.2.27",
     "@heroui/code": "2.2.21",
     "@heroui/dropdown": "2.3.27",
