@@ -1,6 +1,6 @@
-import { EventProps } from "@/types/common.ts";
+import { Event } from "@/types/common.ts";
 
-export const eventsData: EventProps[] = [
+export const eventsData: Event[] = [
   {
     id: 1,
     name: "Team Meeting",
@@ -71,4 +71,74 @@ export const eventsData: EventProps[] = [
     startDate: new Date("2025-12-19T17:00:00"),
     endDate: new Date("2025-12-19T21:00:00"),
   },
+  {
+    id: 11,
+    name: "Neujahrsempfang",
+    description: "Feierlicher Neujahrsempfang mit Sektempfang und Buffet.",
+    startDate: new Date("2026-01-10T11:00:00"),
+    endDate: new Date("2026-01-10T14:00:00"),
+  },
+  {
+    id: 12,
+    name: "Teambuilding Workshop",
+    description: "Gemeinsame Aktivitäten zur Stärkung des Teamgeists.",
+    startDate: new Date("2026-01-25T09:00:00"),
+    endDate: new Date("2026-01-25T17:00:00"),
+  },
+  {
+    id: 13,
+    name: "Produktpräsentation Q1",
+    description: "Vorstellung neuer Produkte und Features für das erste Quartal.",
+    startDate: new Date("2026-02-05T14:00:00"),
+    endDate: new Date("2026-02-05T16:30:00"),
+  },
+  {
+    id: 14,
+    name: "Karnevalsfeier",
+    description: "Kostümparty mit Musik, Tanz und leckerem Buffet.",
+    startDate: new Date("2026-02-14T18:00:00"),
+    endDate: new Date("2026-02-14T23:00:00"),
+  },
+  {
+    id: 15,
+    name: "Frühjahrsputz Aktion",
+    description: "Gemeinsame Aufräumaktion im Büro und Außenbereich.",
+    startDate: new Date("2026-03-21T10:00:00"),
+    endDate: new Date("2026-03-21T15:00:00"),
+  },
+  {
+    id: 16,
+    name: "Osterbrunch",
+    description: "Gemütlicher Brunch mit Kollegen zur Osterzeit.",
+    startDate: new Date("2026-04-04T10:00:00"),
+    endDate: new Date("2026-04-04T13:00:00"),
+  },
+  {
+    id: 17,
+    name: "Mitarbeiter des Monats",
+    description: "Ehrung der besten Mitarbeiter mit Preisverleihung.",
+    startDate: new Date("2026-04-30T16:00:00"),
+    endDate: new Date("2026-04-30T17:30:00"),
+  },
+  {
+    id: 18,
+    name: "Sommerfest",
+    description: "Großes Sommerfest mit Grillen, Musik und Spielen.",
+    startDate: new Date("2026-06-20T15:00:00"),
+    endDate: new Date("2026-06-20T22:00:00"),
+  },
+  {
+    id: 19,
+    name: "Halbjahres-Meeting",
+    description: "Rückblick auf die erste Jahreshälfte und Ausblick auf H2.",
+    startDate: new Date("2026-07-15T09:00:00"),
+    endDate: new Date("2026-07-15T12:00:00"),
+  },
+  {
+    id: 20,
+    name: "Herbstwanderung",
+    description: "Gemeinsame Wanderung durch die herbstliche Natur.",
+    startDate: new Date("2026-10-10T08:00:00"),
+    endDate: new Date("2026-10-10T16:00:00"),
+  }
 ];

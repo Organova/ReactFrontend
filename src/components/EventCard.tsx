@@ -1,42 +1,81 @@
-import React from "react";
-import { Card, CardHeader, CardBody, CardFooter } from "@heroui/card";
-import { Calendar } from "lucide-react";
+import { Event } from "@/types/common.ts";
+import {
+  Button,
+  Card,
+  CardBody,
+  CardHeader, Divider,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  useDisclosure,
+} from "@heroui/react";
+import DateDuration from "@/components/DateDuration.tsx";
+import useEventStore from "@/stores/useEventStore.ts";
+// import DateDurationShort from "@/components/DateDurationShort.tsx";
 
-import { EventProps } from "@/types/common.ts";
-import { formatDate } from "@/utils/formateDate.ts";
+interface EventCardProps extends Event {
+    onEdit: () => void;
+}
 
-const EventCard: React.FC<EventProps> = (props) => {
+const EventCard: React.FC<EventCardProps> = ({ onEdit, ...event }) => {
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const {deleteEvent, fetchEvents} = useEventStore()
+
+  const handleClick = () => {
+    console.log("Clicked: " + event.name);
+    onOpen()
+  };
+
+  const handleDelete = async () => {
+      console.log("Deleted Event: " + event.eventId)
+
+      try {
+          await deleteEvent(event.eventId) // warten, bis das Event erstellt ist
+          await fetchEvents(); // danach die Liste neu laden
+          onClose()
+      } catch (err) {
+          console.error('Fehler beim Erstellen oder Laden der Events:', err);
+      }
+  }
+
   return (
-    <Card className={"m-2"}>
-      <CardHeader>
-        <div className={"min-w-12"}>
-          <Calendar size={50} />
-        </div>
-        <div className="flex flex-col m-2 justify-center">
-          <p className="text-2xl text-default-900">{props.name}</p>
-          <p className={"text-default-500"}>{props.description}</p>
-        </div>
-      </CardHeader>
-      <CardBody>
-        <div className="grid grid-cols-2 gap-4">
-          <p className={"text-xl content-center"}>Start: </p>
-          <p className={"text-default-500 content-center"}>
-            {formatDate(props.startDate.toString())}
-          </p>
-          <p className={"text-xl content-center"}>End: </p>
-          <p className={"text-default-500 content-center"}>
-            {formatDate(props.endDate.toString())}
-          </p>
-        </div>
-      </CardBody>
-      <CardFooter
-        className={"container flex flex-wrap items-center gap-4 justify-center"}
-      >
-        <button className="btn-primary cursor-pointer">Edit</button>
-        <button className="btn-primary cursor-pointer">Add Guest</button>
-        <button className="btn-primary cursor-pointer">Stats</button>
-      </CardFooter>
-    </Card>
+    <>
+      <Card className="py-4 w-full" isPressable onPress={() => handleClick()}>
+        <CardHeader className="pb-0 pt-2 px-4 flex-col items-start">
+          <h4 className="font-bold text-large">{event.name}</h4>
+        </CardHeader>
+        <CardBody className="overflow-visible py-2">
+          <DateDuration startDate={event.startDate} endDate={event.endDate}/>
+          {/*  <DateDurationShort startDate={event.startDate} endDate={event.endDate}/>*/}
+        </CardBody>
+      </Card>
+
+      <Modal backdrop={"blur"} isOpen={isOpen} onClose={onClose} className={"dark text-foreground"}>
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <ModalHeader className={"inline text-3xl"}>
+                {event.name}
+                <Divider className={"mt-2"}/>
+              </ModalHeader>
+              <ModalBody className={"text-small"}>
+                <h2 className="text-large font-bold">Description</h2>
+                {event.description}
+                <DateDuration startDate={event.startDate} endDate={event.endDate}/>
+                <Divider className={"mt-2"}/>
+              </ModalBody>
+              <ModalFooter>
+                <Button color="primary" variant="ghost" onPress={onClose}>Select</Button>
+                <Button color="primary" variant="ghost" onPress={onEdit}>Edit</Button>
+                <Button color="danger" variant="solid" onPress={() => handleDelete()}>Delete</Button>
+              </ModalFooter>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
+    </>
   );
 };
 
