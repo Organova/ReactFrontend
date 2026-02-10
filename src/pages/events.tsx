@@ -91,7 +91,7 @@ export default function EventsPage() {
                 </div>
                 <Divider />
                 <ScrollShadow hideScrollBar className="grid grid-cols-3 gap-4 justify-items-center w-full overflow-y-auto p-4">
-                    {events.map((currentEvent) => (
+                    {events?.map((currentEvent) => (
                         <div key={currentEvent.eventId} className="w-full">
                             <EventCard
                                 {...currentEvent}

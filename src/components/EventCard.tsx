@@ -42,7 +42,7 @@ const EventCard: React.FC<EventCardProps> = ({ onEdit, ...event }) => {
 
   return (
     <>
-      <Card className="py-4 w-full" isPressable onPress={() => handleClick()}>
+      <Card className="py-4 w-full z-0" isPressable onPress={() => handleClick()}>
         <CardHeader className="pb-0 pt-2 px-4 flex-col items-start">
           <h4 className="font-bold text-large">{event.name}</h4>
         </CardHeader>

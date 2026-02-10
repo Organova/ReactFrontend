@@ -23,7 +23,7 @@ const SidebarItem = ({ icon, text, active, alert, onclick }) => {
     >
       <Icon size={25} />
       <span
-        className={`overflow-hidden transition-all ${isOpen ? "w-52 ml-3" : "w-0"}`}
+        className={`z-40 overflow-hidden transition-all ${isOpen ? "w-52 ml-3" : "w-0"}`}
       >
         {text}
       </span>
@@ -40,6 +40,7 @@ const SidebarItem = ({ icon, text, active, alert, onclick }) => {
         bg-indigo-100 text-indigo-800 text-sm
         invisible opacity-20 -translate-x-3 transition-all
         group-hover:visible group-hover:opacity-100 group-hover:translate-x-0
+        z-40
       `}
         >
           {text}

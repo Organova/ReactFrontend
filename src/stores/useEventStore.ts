@@ -32,8 +32,11 @@ export default create<eventStore>()((set) => ({
             events = await EventService.getAllEvents(tenantId, token)
             console.log("Store " + events)
         } catch (e) {
-            // @ts-ignore
-            set({error: e.message})
+            set({
+                // @ts-ignore
+                error: e.message,
+                events: []
+            })
         } finally {
             events?.data.map(event => {
                event.endDate = new Date(event.endDate)
