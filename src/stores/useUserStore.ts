@@ -38,7 +38,7 @@ export default create<eventStore>((set, get) => ({
     setSetLastName: (lastName: string) => set({ lastName }),
     id: "4d96c689-ccb3-4cdb-93e4-6a92c0dde86e",
     tenantId: "556440b7-a75f-407b-abb2-1c1efccf662f",
-    token: "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI0ZDk2YzY4OS1jY2IzLTRjZGItOTNlNC02YTkyYzBkZGU4NmUiLCJpYXQiOjE3NzA2NDAwMDMsImV4cCI6MTc3MDY0MzYwM30.szuQepDc6L9665SXE9nXAtNR_jLyaesn2zozatEK3xY",
+    token: "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI0ZDk2YzY4OS1jY2IzLTRjZGItOTNlNC02YTkyYzBkZGU4NmUiLCJpYXQiOjE3NzA3MTQ3NzMsImV4cCI6MTc3MDcxODM3M30.F8AQeBzxcYvqthDa6LO2w1nOy42Koud8O3g3N0X52GQ",
     login: async () => {
         set({ loading: true, error: "" });
         try {

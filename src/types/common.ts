@@ -1,18 +1,29 @@
 export type SidebarItem = {
-  id: string;
-  text: string;
-  path: string;
-  icon: any;
-  alert?: boolean;
-  active: boolean;
+    id: string;
+    text: string;
+    path: string;
+    icon: any;
+    alert?: boolean;
+    active: boolean;
 };
 
 export type Event = {
-  id: number;
-  name: string;
-  description: string;
-  startDate: Date;
-  endDate: Date;
+    eventId: string,
+    name: string,
+    description: string,
+    startDate: Date,
+    endDate: Date,
+    timeZone: string
+};
+
+export type PaginatedEventsResponse = {
+    data: Event[];
+    currentPage: number;
+    totalPages: number;
+    totalItems: number;
+    pageSize: number;
+    hasNext: boolean;
+    hasPrevious: boolean;
 };
 
 export type User = {

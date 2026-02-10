@@ -13,20 +13,31 @@ import {
 } from "@heroui/react";
 import DateDuration from "@/components/DateDuration.tsx";
 import useEventStore from "@/stores/useEventStore.ts";
+// import DateDurationShort from "@/components/DateDurationShort.tsx";
 
-const EventCard: React.FC<Event> = (event) => {
+interface EventCardProps extends Event {
+    onEdit: () => void;
+}
+
+const EventCard: React.FC<EventCardProps> = ({ onEdit, ...event }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const {deleteEvent} = useEventStore()
+  const {deleteEvent, fetchEvents} = useEventStore()
 
   const handleClick = () => {
     console.log("Clicked: " + event.name);
     onOpen()
   };
 
-  const handleDelete = () => {
-      console.log("Deleted Event: " + event.id)
-      deleteEvent(event.id)
-      onClose()
+  const handleDelete = async () => {
+      console.log("Deleted Event: " + event.eventId)
+
+      try {
+          await deleteEvent(event.eventId) // warten, bis das Event erstellt ist
+          await fetchEvents(); // danach die Liste neu laden
+          onClose()
+      } catch (err) {
+          console.error('Fehler beim Erstellen oder Laden der Events:', err);
+      }
   }
 
   return (
@@ -37,6 +48,7 @@ const EventCard: React.FC<Event> = (event) => {
         </CardHeader>
         <CardBody className="overflow-visible py-2">
           <DateDuration startDate={event.startDate} endDate={event.endDate}/>
+          {/*  <DateDurationShort startDate={event.startDate} endDate={event.endDate}/>*/}
         </CardBody>
       </Card>
 
@@ -56,7 +68,7 @@ const EventCard: React.FC<Event> = (event) => {
               </ModalBody>
               <ModalFooter>
                 <Button color="primary" variant="ghost" onPress={onClose}>Select</Button>
-                <Button color="primary" variant="ghost" onPress={onClose}>Edit</Button>
+                <Button color="primary" variant="ghost" onPress={onEdit}>Edit</Button>
                 <Button color="danger" variant="solid" onPress={() => handleDelete()}>Delete</Button>
               </ModalFooter>
             </>
