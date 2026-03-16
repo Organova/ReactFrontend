@@ -1,4 +1,4 @@
-import axios, { AxiosInstance } from "axios";
+import api_client from "@/services/api_client.ts";
 
 export interface GuestCreateRequest {
   firstName: string;
@@ -19,43 +19,16 @@ export interface GuestResponse {
   mail: string;
 }
 
-class ApiService {
-  private api: AxiosInstance;
+export interface PaginatedGuestsResponse {
+  content: GuestResponse[];
+  totalPages: number;
+  totalElements: number;
+  size: number;
+  number: number;
+}
+
+export class GuestService {
   private readonly TOKEN_KEY = "auth_token";
-
-  constructor() {
-    this.api = axios.create({
-      baseURL: import.meta.env.VITE_API_URL || "http://localhost:8080",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-
-    this.api.interceptors.request.use(
-      (config) => {
-        const token = this.getToken();
-
-        if (token) {
-          config.headers.Authorization = `Bearer ${token}`;
-        }
-
-        return config;
-      },
-      (error: any) => Promise.reject(error),
-    );
-
-    this.api.interceptors.response.use(
-      (response: any) => response,
-      (error: { response: { status: number } }) => {
-        if (error.response?.status === 401) {
-          this.clearToken();
-          window.location.href = "/login";
-        }
-
-        return Promise.reject(error);
-      },
-    );
-  }
 
   private getToken(): string | null {
     return localStorage.getItem(this.TOKEN_KEY);
@@ -73,39 +46,107 @@ class ApiService {
     return !!this.getToken();
   }
 
-  async getAllGuests(): Promise<GuestResponse[]> {
-    const response = await this.api.get<GuestResponse[]>("/api/v1/guests");
+  async getAllGuests(tenantId: string): Promise<PaginatedGuestsResponse> {
+    const token = this.getToken();
+    if (!token) {
+      throw new Error("No authentication token found");
+    }
 
+    const authToken = "Bearer " + token;
+
+    const response = await api_client.get<PaginatedGuestsResponse>("/api/v1/guests", {
+      headers: {
+        "X-Tenant-Id": tenantId,
+        Authorization: authToken,
+      },
+    });
+
+    console.log(response);
     return response.data;
   }
 
-  async getGuest(id: string): Promise<GuestResponse> {
-    const response = await this.api.get<GuestResponse>(`/api/v1/guests/${id}`);
+  async getGuest(tenantId: string, guestId: string): Promise<GuestResponse> {
+    const token = this.getToken();
+    if (!token) {
+      throw new Error("No authentication token found");
+    }
 
+    const authToken = "Bearer " + token;
+
+    const response = await api_client.get<GuestResponse>(`/api/v1/guests/${guestId}`, {
+      headers: {
+        "X-Tenant-Id": tenantId,
+        Authorization: authToken,
+      },
+    });
+
+    console.log(response);
     return response.data;
   }
 
-  async createGuest(data: GuestCreateRequest): Promise<GuestResponse> {
-    const response = await this.api.post<GuestResponse>("/api/v1/guests", data);
+  async createGuest(tenantId: string, data: GuestCreateRequest): Promise<GuestResponse> {
+    const token = this.getToken();
+    if (!token) {
+      throw new Error("No authentication token found");
+    }
 
+    const authToken = "Bearer " + token;
+
+    const response = await api_client.post<GuestResponse>("/api/v1/guests", data, {
+      headers: {
+        "X-Tenant-Id": tenantId,
+        Authorization: authToken,
+      },
+    });
+
+    console.log(response);
     return response.data;
   }
 
   async updateGuest(
-    id: string,
-    data: GuestUpdateRequest,
+      tenantId: string,
+      guestId: string,
+      data: GuestUpdateRequest
   ): Promise<GuestResponse> {
-    const response = await this.api.put<GuestResponse>(
-      `/api/v1/guests/${id}`,
-      data,
+    const token = this.getToken();
+    if (!token) {
+      throw new Error("No authentication token found");
+    }
+
+    const authToken = "Bearer " + token;
+
+    const response = await api_client.put<GuestResponse>(
+        `/api/v1/guests/${guestId}`,
+        data,
+        {
+          headers: {
+            "X-Tenant-Id": tenantId,
+            Authorization: authToken,
+          },
+        }
     );
 
+    console.log(response);
     return response.data;
   }
 
-  async deleteGuest(id: string): Promise<void> {
-    await this.api.delete(`/api/v1/guests/${id}`);
+  async deleteGuest(tenantId: string, guestId: string): Promise<void> {
+    const token = this.getToken();
+    if (!token) {
+      throw new Error("No authentication token found");
+    }
+
+    const authToken = "Bearer " + token;
+
+    const response = await api_client.delete(`/api/v1/guests/${guestId}`, {
+      headers: {
+        "X-Tenant-Id": tenantId,
+        Authorization: authToken,
+      },
+    });
+
+    console.log(response);
   }
 }
 
-export const apiService = new ApiService();
+export const guestService = new GuestService();
