@@ -34,6 +34,7 @@ export type User = {
 export type Login = {
     token: string
     user: User
+    defaultTenantId: string
 }
 
 export type Signup = {

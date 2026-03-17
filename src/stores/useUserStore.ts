@@ -18,7 +18,7 @@ type eventStore = {
     id: string;
     tenantId: string;
     token: string;
-    login: () => Promise<void>;
+    login: () => Promise<boolean> | Promise<string>;
     signup: () => Promise<void>;
 };
 
@@ -38,7 +38,7 @@ export default create<eventStore>((set, get) => ({
     setSetLastName: (lastName: string) => set({ lastName }),
     id: "4d96c689-ccb3-4cdb-93e4-6a92c0dde86e",
     tenantId: "556440b7-a75f-407b-abb2-1c1efccf662f",
-    token: "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI0ZDk2YzY4OS1jY2IzLTRjZGItOTNlNC02YTkyYzBkZGU4NmUiLCJpYXQiOjE3NzA3MTg2MzksImV4cCI6MTc3MDcyMjIzOX0.dSnw6NcTAxp7kQ2sb0z2kJRdfYPqCGKCKZIk-77KrFU",
+    token: "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI0ZDk2YzY4OS1jY2IzLTRjZGItOTNlNC02YTkyYzBkZGU4NmUiLCJpYXQiOjE3NzA3Mjg1MjksImV4cCI6MTc3MDczMjEyOX0.4nQKINotOGnHzoK71tvURzXS4fKbxKVqKsue4bfuaHM",
     login: async () => {
         set({ loading: true, error: "" });
         try {
@@ -49,10 +49,20 @@ export default create<eventStore>((set, get) => ({
                 token: (response && (response as any).token) || "",
                 id: (response && (response as any).id) || "",
                 loading: false,
-                loggedIn: true
+                loggedIn: true,
+                tenantId: response && (response as any).defaultTenantId || ""
             });
+
+            console.log(typeof response)
+
+            if (typeof response !== 'object'){
+                throw new Error(response)
+            }
+
+            return true;
         } catch (err: any) {
             set({ error: err?.message || "Login fehlgeschlagen", loading: false });
+            return err?.message;
         }
     },
     signup: async () => {

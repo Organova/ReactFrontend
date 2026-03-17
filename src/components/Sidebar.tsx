@@ -30,7 +30,7 @@ const Sidebar = () => {
 
   return (
     <aside
-      className={`h-full transition-all duration-200 ease-in-out ${isOpen ? "w-52" : "w-14"} flex-shrink-0`}
+      className={`h-full transition-all duration-200 ease-in-out ${isOpen ? "w-64" : "w-14"} flex-shrink-0`}
     >
       <nav className="h-full flex flex-col shadow-sm">
         <div className="p-4 pb-2 flex items-center justify-between">
