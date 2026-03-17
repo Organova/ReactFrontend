@@ -3,13 +3,22 @@ import {Login, Signup, UserInfoLogin, UserInfoSignup} from "@/types/common.ts";
 
 export class UserService {
     static async signup(user: UserInfoSignup) {
-        const response = await api_client.post<Signup>("/signup", user)
+        const response = await api_client.post<Signup>("/auth/signup", user)
         return response.data
     }
 
     static async login(user: UserInfoLogin) {
-        const response = await api_client.post<Login>("/login", user)
-        return response.data
+        try {
+            const response = await api_client.post<Login>(`/auth/login`, user);
+            return response.data;
+        } catch (error: any) {
+            if (error.response) {
+                const resMes: string = error.response.data.message;
+                console.log(resMes);
+                return resMes;
+            }
+            throw error;
+        }
     }
 }
 
