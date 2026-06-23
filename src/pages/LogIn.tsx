@@ -5,7 +5,6 @@ import useUserStore from "@/stores/useUserStore.ts";
 import {useNavigate} from "react-router-dom";
 
 const LogIn: React.FC = () => {
-    const [password, setInputPassword] = React.useState("");
     const [errors, setErrors] = React.useState({});
     const [passwordCorrect, setPasswordCorrect] = React.useState(true)
     const [pce, setPCE] = React.useState("") // Password Check from Server Error
@@ -13,37 +12,10 @@ const LogIn: React.FC = () => {
 
     const {login, setUsername, setPassword} = useUserStore()
 
-    const getPasswordError = (value: any) => {
-        if (value.length < 8) return "Password must be 8–32 characters";
-        if (value.length > 32) return "Password must be 8–32 characters";
-        if (!/[A-Z]/.test(value)) return "Password needs at least 1 uppercase letter";
-        if (!/[a-z]/.test(value)) return "Password needs at least 1 lowercase letter";
-        if (!/[0-9]/.test(value)) return "Password needs at least 1 number";
-        if (!/[^a-zA-Z0-9]/.test(value)) return "Password needs at least 1 special character";
-        return null;
-    };
-
     const onSubmit = async (e:any) => {
         e.preventDefault();
         const data = Object.fromEntries(new FormData(e.currentTarget));
 
-        // Custom validation checks
-        const newErrors = {};
-
-        // Password validation
-        const passwordError = getPasswordError(data.password);
-
-        if (passwordError) {
-            newErrors.password = passwordError;
-        }
-
-        if (Object.keys(newErrors).length > 0) {
-            setErrors(newErrors);
-
-            return;
-        }
-
-        // Clear errors and submit
         setErrors({});
 
         setUsername(data.username)
@@ -93,15 +65,11 @@ const LogIn: React.FC = () => {
                             />
                             <Input
                                 isRequired
-                                errorMessage={getPasswordError(password)}
-                                isInvalid={getPasswordError(password) !== null}
                                 label="Password"
                                 labelPlacement="inside"
                                 name="password"
                                 placeholder="Enter your password"
                                 type="password"
-                                value={password}
-                                onValueChange={setInputPassword}
                             />
 
                             <div className="flex gap-4">

@@ -31,14 +31,24 @@ export type User = {
     username: string
 }
 
+export type UserProfile = {
+    id: string
+    username: string
+    email: string
+    firstName: string
+    lastName: string
+}
+
 export type Login = {
     token: string
+    refreshToken: string
     user: User
     defaultTenantId: string
 }
 
 export type Signup = {
     token: string
+    refreshToken: string
     user: User
     defaultTenantId: string
 }

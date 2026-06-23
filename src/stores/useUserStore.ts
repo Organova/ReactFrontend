@@ -1,7 +1,7 @@
 import {create} from "zustand";
 import {UserService} from "@/services/userService.ts";
 
-type eventStore = {
+type UserStore = {
     loggedIn: boolean;
     loading: boolean;
     error: string;
@@ -18,46 +18,49 @@ type eventStore = {
     id: string;
     tenantId: string;
     token: string;
-    login: () => Promise<boolean> | Promise<string>;
+    refreshToken: string;
+    login: () => Promise<boolean | string>;
     signup: () => Promise<void>;
+    logout: () => Promise<void>;
 };
 
-export default create<eventStore>((set, get) => ({
+export default create<UserStore>((set, get) => ({
     loggedIn: false,
     loading: false,
     error: "",
-    username: "admin",
+    username: "",
     setUsername: (username: string) => set({ username }),
-    password: "Geheim123!",
+    password: "",
     setPassword: (password: string) => set({ password }),
-    email: "admin@example.com",
+    email: "",
     setEmail: (email: string) => set({ email }),
-    firstName: "Admin",
+    firstName: "",
     setFirstName: (firstName: string) => set({ firstName }),
-    lastName: "Lindner",
+    lastName: "",
     setSetLastName: (lastName: string) => set({ lastName }),
-    id: "4d96c689-ccb3-4cdb-93e4-6a92c0dde86e",
-    tenantId: "556440b7-a75f-407b-abb2-1c1efccf662f",
-    token: "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI0ZDk2YzY4OS1jY2IzLTRjZGItOTNlNC02YTkyYzBkZGU4NmUiLCJpYXQiOjE3NzA3Mjg1MjksImV4cCI6MTc3MDczMjEyOX0.4nQKINotOGnHzoK71tvURzXS4fKbxKVqKsue4bfuaHM",
+    id: "",
+    tenantId: "",
+    token: "",
+    refreshToken: "",
     login: async () => {
         set({ loading: true, error: "" });
         try {
             const { username, password } = get();
-            // EventService.login erwartet ein passendes Payload; hier username/password übergeben
             const response = await UserService.login({ username, password });
-            set({
-                token: (response && (response as any).token) || "",
-                id: (response && (response as any).id) || "",
-                loading: false,
-                loggedIn: true,
-                tenantId: response && (response as any).defaultTenantId || ""
-            });
 
-            console.log(typeof response)
-
-            if (typeof response !== 'object'){
-                throw new Error(response)
+            if (typeof response !== 'object') {
+                throw new Error(response as string);
             }
+
+            set({
+                token: response.token || "",
+                refreshToken: response.refreshToken || "",
+                id: response.user?.id || "",
+                username: response.user?.username || username,
+                tenantId: response.defaultTenantId || "",
+                loggedIn: true,
+                loading: false,
+            });
 
             return true;
         } catch (err: any) {
@@ -65,23 +68,39 @@ export default create<eventStore>((set, get) => ({
             return err?.message;
         }
     },
+    logout: async () => {
+        const { refreshToken } = get();
+        try {
+            await UserService.logout(refreshToken);
+        } catch {
+            // logout locally even if the API call fails
+        }
+        set({
+            loggedIn: false,
+            token: "",
+            refreshToken: "",
+            id: "",
+            tenantId: "",
+            username: "",
+            password: "",
+            email: "",
+            firstName: "",
+            lastName: "",
+        });
+    },
     signup: async () => {
         set({ loading: true, error: "" });
         try {
             const { username, password, email, firstName, lastName } = get();
-            const response = await UserService.signup({
-                username,
-                password,
-                email,
-                firstName,
-                lastName,
-            } as any);
+            const response = await UserService.signup({ username, password, email, firstName, lastName });
             set({
-                token: (response && (response as any).token) || "",
-                id: (response && (response as any).id) || "",
-                tenantId: (response && (response as any).tenantId || ""),
+                token: response.token || "",
+                refreshToken: response.refreshToken || "",
+                id: response.user?.id || "",
+                username: response.user?.username || username,
+                tenantId: response.defaultTenantId || "",
                 loading: false,
-                loggedIn: true
+                loggedIn: true,
             });
         } catch (err: any) {
             set({ error: err?.message || "Signup fehlgeschlagen", loading: false });

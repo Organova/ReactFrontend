@@ -20,6 +20,10 @@ export class UserService {
             throw error;
         }
     }
+
+    static async logout(refreshToken: string) {
+        await api_client.post("/auth/logout", { refreshToken });
+    }
 }
 
 export default new UserService()
